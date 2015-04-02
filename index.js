@@ -13,8 +13,8 @@ var express = require('express'),
     FacebookStrategy = require('passport-facebook');
 
 var path = require('path');
-//app.use('/includes',express.static(path.join(__dirname, 'includes')));
-app.use(express.static());
+//
+//
 
 
 //We will be creating these two files shortly
@@ -22,7 +22,7 @@ app.use(express.static());
     funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
 
 var app = express();
-
+app.use('/includes',express.static(path.join(__dirname, 'includes')));
 //===============PASSPORT===============
 
 // Passport session setup.
