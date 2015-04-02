@@ -12,7 +12,8 @@ var express = require('express'),
     GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
 
-    var path = require('path');
+var path = require('path');
+app.use(express.static(path.join(__dirname, 'includes')));
 
 
 //We will be creating these two files shortly
