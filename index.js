@@ -23,6 +23,7 @@ var path = require('path');
 
 var app = express();
 app.use('/includes',express.static(path.join(__dirname, 'includes')));
+app.use('/images',express.static(path.join(__dirname, 'images')));
 //===============PASSPORT===============
 
 // Passport session setup.
