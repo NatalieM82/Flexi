@@ -13,7 +13,7 @@ var express = require('express'),
     FacebookStrategy = require('passport-facebook');
 
 var path = require('path');
-app.use(express.static(path.join(__dirname, 'includes')));
+app.use('/includes', express.static(path.join(__dirname, 'includes')));
 
 
 //We will be creating these two files shortly
