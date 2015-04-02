@@ -1,0 +1,128 @@
+* {	margin: 0px;
+	padding: 0px; 
+	font-family: Arial, Helvetica, sans-serif;}
+
+html {height: 100%; }
+
+body { height: 100%;
+		  background: linear-gradient(180deg, #1c1822,  #171519); }
+
+#wrapper 	{position: relative;
+				height: 100%;
+				 width: 100%;
+				 background: radial-gradient(#1c1822,  #171519);
+				 //border: 1px solid white;}
+				 
+#trapper {margin: auto; 
+			   height: 100%;
+			   width: 90%;	
+			   //border: 1px solid white;}
+
+#topBar {position: fixed;
+		      top: 0px;
+			  left: 0px;
+			  background-color: #171519;
+			  height: 100px;
+			  width: 100%;
+			  border-bottom: 1px solid #77727d;
+			box-shadow: 0px 0px 5px 0px black;
+			//border-bottom: 1px solid white;}
+
+				#logo {position: absolute;
+						  top: 17px;
+						  left: 70px;
+						  width: 300px;
+						  height: 71px;
+						  background-image: url(../images/FP_Logo.png);
+						  background-size: 100%;
+						  background-repeat: no-repeat;
+						  //border:1px solid white;}
+						  
+				#user {position: absolute;
+						  top: 17px;
+						  right: 70px;
+						  width: 60px;
+						  height: 60px; 
+						  border-radius: 100px;
+						  border: 5px solid white;}
+				
+#main {background: radial-gradient(#241e2c, #241e2c , #171519);
+			height: 100%;
+			box-shadow: 0px 0px 15px 0px black; }
+
+				#toolBar {  position: fixed;
+							    top: 23%;
+							    left: 6%;
+							    vertical-align: middle;
+							    //background: white;
+								height: 60%;
+								width: 75px;
+								border-right: 1px solid #77727d; 
+								box-shadow: 2px 0px 0px 0px black;}
+								
+						#view {position: absolute;
+								  top: 10%;
+								  left: 0px;
+								  width: 50px;
+								  height: 50px; 
+								  border-radius: 100px;
+								  border: 5px solid white;
+								  color: white;
+								  font-size: 45px;
+								  text-align: center;}
+								  
+					    #new {position: absolute;
+								 top: 45%;
+								  left: 0px;
+								  width: 50px;
+								  height: 50px; 
+								  border-radius: 100px;
+								  border: 5px solid white;
+								  color: white;
+								  font-size: 45px;
+								  text-align: center;}
+								  
+						#del {position: absolute;
+								  bottom: 10%;
+								  left: 0px;
+								  width: 50px;
+								  height: 50px; 
+								  border-radius: 100px;
+								  border: 5px solid white;
+								  color: white;
+								  font-size: 45px;
+								  text-align: center;}
+				
+#bottomBar {position: fixed;
+					bottom: 0px;
+					left: 0px;
+					background-color: #171519;
+					height: 50px;
+					width:100%;
+					border-top: 1px solid #77727d;
+					box-shadow: 0px 0px 5px 0px black;
+					//border-top: 1px solid white; }
+
+				   
+				#footer_menu {position: absolute;
+									  top: 10px;
+									  left: 70px;
+									  width: 300px;
+									  height: 30px;									  
+									  //border: 1px solid white; }
+				
+						li {display: inline;
+						   color: white;
+						   font-size: 28px;
+						   padding-right: 50px;}
+						   
+				#surveyLogo {position: absolute;
+									  top: 10px;
+									  right: 70px;
+									  width: 170px;
+									  height: 30px;		
+									  color: white;
+						  			  font-size: 28px;							  
+									  //border: 1px solid white; }
+
+

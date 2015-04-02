@@ -1,0 +1,196 @@
+@font-face {
+	font-family: BigMisterC;
+	src: url(Bigmcn__.ttf);
+}
+
+
+* {	margin: 0px;
+	padding: 0px; 
+	font-family: Arial, Helvetica, sans-serif;}
+
+input {
+	background-color: transparent;
+	color: #ffffff
+}
+
+	html {height: 100%; }
+
+	body { height: 100%;
+		background: linear-gradient(180deg, #1c1822,  #171519); }
+
+		#wrapper 	{position: relative;
+			height: 100%;
+			width: 100%;
+			background: radial-gradient(#1c1822,  #171519);
+			//border: 1px solid white;}
+
+			#trapper {margin: auto; 
+				height: 100%;
+				width: 90%;	
+				//border: 1px solid white;}
+
+				#topBar {position: fixed;
+					top: 0px;
+					left: 0px;
+					background-color: #171519;
+					height: 100px;
+					width: 100%;
+					border-bottom: 1px solid #77727d;
+					box-shadow: 0px 0px 5px 0px black;
+					//border-bottom: 1px solid white;}
+
+					#logo {position: absolute;
+						top: 17px;
+						left: 70px;
+						width: 300px;
+						height: 71px;
+						background-image: url(../images/FP_Logo.png);
+						background-size: 100%;
+						background-repeat: no-repeat;
+						//border:1px solid white;}
+
+
+						#logo_login {
+							width: 300px;
+							height: 71px;
+							background-image: url(../images/FP_Logo.png);
+							background-size: 101%;
+							display: block;
+						    margin-left: auto;
+						    margin-right: auto;
+							
+							//border:1px solid white;
+							max-width: 100%;
+							background-repeat: no-repeat;
+							
+						}
+
+						#signinSection {
+							display: block;
+						    margin-left: auto;
+						    margin-right: auto;
+						    width: fit-content; 
+						    width: -moz-fit-content;
+    						width: -webkit-fit-content;
+    						margin-top: 70px;
+						}
+
+						#local-sign-in, #local-reg {
+							color:#ffffff;
+							position: relative;
+						}
+
+						#user {position: absolute;
+							top: 17px;
+							right: 70px;
+							width: 60px;
+							height: 60px; 
+							border-radius: 100px;
+							border: 5px solid white;
+							}
+
+							#main {background: radial-gradient(#241e2c, #241e2c , #171519);
+								height: 100%;
+								box-shadow: 0px 0px 15px 0px black; }
+
+								#exp {  position: absolute;
+									top: 50%;
+									left: 20%;
+									font-size: 40px;
+									color: white;
+									height: 40px;
+									width: 225px;
+									//border: 1px solid white; }
+
+									#cat {  position: absolute;
+										top: 50%;
+										right: 20%;
+										font-size: 40px;
+										color: white;
+										height: 40px;
+										width: 195px;
+										//border: 1px solid white; }
+
+										#bottomBar {position: fixed;
+											bottom: 0px;
+											left: 0px;
+											background-color: #171519;
+											height: 50px;
+											width:100%;
+											border-top: 1px solid #77727d;
+											box-shadow: 0px 0px 5px 0px black;
+											//border-top: 1px solid white; }
+
+
+											#footer_menu {position: absolute;
+												top: 10px;
+												left: 70px;
+												width: 300px;
+												height: 30px;									  
+												//border: 1px solid white; }
+
+												li {display: inline;
+													color: white;
+													font-size: 28px;
+													padding-right: 50px;}
+
+													#surveyLogo {position: absolute;
+														top: 10px;
+														right: 70px;
+														width: 170px;
+														height: 30px;		
+														color: white;
+														font-size: 28px;							  
+														//border: 1px solid white; }
+
+
+.signinInput {
+	border: 1px solid #ffffff;
+	border-radius: 5px;
+	height: 70px;
+	width: 300px;
+	background-color: transparent; 
+	color:#aeaeae;
+	text-align: center;
+	font-size: 25px;
+	font-family: BigMisterC;
+}
+
+.regBtn {
+	color:#466a61; 
+	font-size: 30px;
+	font-family: BigMisterC;
+	font-weight: 400;
+}
+
+#local {
+	text-align: center;
+	margin-top: 50px;
+}
+
+.subBtn {
+	background-image: url(../images/GoButton.png);
+	width: 63px;
+	height: 63px;
+	background-color: transparent;
+	border: none;
+	position: absolute;
+	top:44px;
+	right: -28px;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #231e2b inset;
+    -webkit-text-fill-color: #aeaeae !important;
+}
+
+#wrapper2 {
+	padding-top: 100px;
+}
+
+#regTitle {
+	text-align: center;
+	color:#466a61; 
+	font-size: 40px;
+	font-family: BigMisterC;
+}

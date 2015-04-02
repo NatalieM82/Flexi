@@ -1,0 +1,79 @@
+<!-- views/layouts/main.handlebars -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="User Authentication">
+  <meta name="author" content="">
+
+  <title>FlexiPrice</title>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  
+   <!-- Bootstrap core JavaScript
+   ================================================== -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+   <!-- Latest compiled and minified JavaScript -->
+   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+   <link href='http://fonts.googleapis.com/css?family=Exo+2:200italic' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" href="http://localhost/FlexiPrice/includes/style.css">
+   <link rel="stylesheet" href="http://localhost/FlexiPrice/views/Experiments/includes/style.css">
+   <link rel="stylesheet" href="http://localhost/FlexiPrice/views/Categories/includes/style.css">
+
+ </head>
+
+ <body>
+
+
+   {{#if user}}
+   <section id="wrapper">
+    <section id="trapper">
+
+      <header id="topBar">    
+        <a href="/"><article id="logo"></article></a>
+        <a href="/logout"><img src="{{user.avatar}}" id="user"></a>
+      </header>
+      
+      {{/if}}
+
+      {{#if error}}
+      <p class="alert alert-warning">{{error}}</p>
+      {{/if}}
+
+      {{#if success}}
+      <p class="alert alert-success">{{success}}</p>
+      {{/if}}
+
+      {{#if notice}}
+      <p class="alert alert-info">{{notice}}</p>
+      {{/if}}
+
+      <!--where our other templates will insert-->
+      {{{body}}}
+
+      {{#if user}}
+      <footer id="bottomBar"> 
+        <article id="footer_menu">
+          <ul>
+            <li> About </li>
+            <li> Contact </li>
+          </ul>
+        </article>
+        
+        <article id="surveyLogo">SurveyGizmo</article>
+      </footer>
+      
+    </section>            
+  </section>  
+  {{/if}}
+
+
+
+
+</body>
+</html>
+

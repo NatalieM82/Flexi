@@ -1,0 +1,45 @@
+<!-- views/signin.handlebars -->
+
+
+<section id="wrapper2">
+  <a href="/"><article id="logo_login"></article></a>
+
+  <section id="signinSection">
+   
+    
+
+<!--     <form id="local-sign-in" class="collapse" action="/login" method="post">
+      <div>
+          <p></p>
+          <label>Username:</label>
+          <input type="text" name="username"/>
+      </div>
+      <div>
+          <label>Password:</label>
+          <input type="password" name="password"/>
+      </div>
+      <div>
+          <input type="submit" class="btn btn-primary btn-sm" value="Log In"/>
+      </div>
+    </form> -->
+
+    <form id="local-sign-in" action="/login" method="post">
+      <input type="text" name="username" placeholder="User name" required class="signinInput"/>
+      
+      <p></p>
+      <input type="password" name="password" placeholder="Password" required class="signinInput" />
+      
+      
+      
+      <input type="submit" class="btn btn-primary btn-sm subBtn" value=""/>
+      
+    </form>
+    <p></p>
+    <div id="local">
+      <a href="/local-reg" class="regBtn" role="button">Register</a>
+    </div>
+
+
+  </section>
+
+</section>

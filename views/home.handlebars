@@ -1,0 +1,39 @@
+<!-- views/home.handlebars -->
+
+<!--User connected -->
+{{#if user}}
+
+      <section id="main"> 
+        <a href="/Experiments">
+          <article id="exp">
+            Experiments
+          </article> 
+        </a>
+        
+        <a href="/Categories">
+          <article id="cat">
+            Categories
+          </article>
+        </a>
+      </section>
+
+<!--User NOT connected -->
+{{else}}
+ 
+ 
+    <!-- <article id="logo_login"></article>
+
+  <section id="signinSection">
+     <p>
+      <a href="/signin" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span> 
+        Sign in!
+      </a>
+    </p>
+  </section> -->
+  
+  <script type="text/javascript">
+      window.onload=function(){window.location.href = "/signin"};
+  </script>
+
+{{/if}}
