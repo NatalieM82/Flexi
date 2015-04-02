@@ -12,6 +12,9 @@ var express = require('express'),
     GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
 
+    var path = require('path');
+app.use(express.static(path.join(__dirname ,'views')));
+
 //We will be creating these two files shortly
  var config = require('./config.js'), //config file contains all tokens and other private info
     funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
