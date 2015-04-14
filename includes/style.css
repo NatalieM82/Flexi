@@ -6,7 +6,8 @@
 
 * {	margin: 0px;
 	padding: 0px; 
-	font-family: Arial, Helvetica, sans-serif;}
+	font-family: Arial, Helvetica, sans-serif;
+	color: white;}
 
 input {
 	background-color: transparent;
@@ -17,6 +18,15 @@ input {
 
 	body { height: 100%;
 		background: linear-gradient(180deg, #1c1822,  #171519); }
+
+		.mybreadCrums{
+			padding-left: 30px;
+		}
+
+		.mybreadCrums li {padding-right: 0px;
+							font-size: 15px;
+							
+						}
 
 		#wrapper 	{position: relative;
 			height: 100%;
@@ -37,6 +47,7 @@ input {
 					width: 100%;
 					border-bottom: 1px solid #77727d;
 					box-shadow: 0px 0px 5px 0px black;
+					  z-index: 10;
 					//border-bottom: 1px solid white;}
 
 					#logo {position: absolute;
@@ -72,7 +83,7 @@ input {
 						    width: fit-content; 
 						    width: -moz-fit-content;
     						width: -webkit-fit-content;
-    						margin-top: 70px;
+    						margin-top: 60px;
 						}
 
 						#local-sign-in, #local-reg {
@@ -91,7 +102,8 @@ input {
 
 							#main {background: radial-gradient(#241e2c, #241e2c , #171519);
 								height: 100%;
-								box-shadow: 0px 0px 15px 0px black; }
+								box-shadow: 0px 0px 15px 0px black; 
+								padding-top: 120px}
 
 								#exp {  position: absolute;
 									top: 50%;
@@ -154,6 +166,7 @@ input {
 	text-align: center;
 	font-size: 25px;
 	font-family: BigMisterC;
+	margin-top: 10px;
 }
 
 .regBtn {
@@ -162,6 +175,8 @@ input {
 	font-family: BigMisterC;
 	font-weight: 400;
 }
+
+
 
 #local {
 	text-align: center;
@@ -175,10 +190,12 @@ input {
 	background-color: transparent;
 	border: none;
 	position: absolute;
-	top:44px;
+	top:55px;
 	right: -28px;
 }
 
+.subBtn:active {outline:none; !important;}
+.subBtn:focus {outline:none; !important;}
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #231e2b inset;
     -webkit-text-fill-color: #aeaeae !important;
@@ -193,4 +210,8 @@ input:-webkit-autofill {
 	color:#466a61; 
 	font-size: 40px;
 	font-family: BigMisterC;
+}
+
+.password {
+	margin-top: 10px;
 }

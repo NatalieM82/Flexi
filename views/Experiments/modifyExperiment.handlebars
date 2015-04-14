@@ -1,0 +1,220 @@
+<script type="text/javascript">
+
+
+function goSimulations() {
+	document.getElementById("simTab").style.background = "#524567";
+	document.getElementById("detailTab").style.background = "#231e2b";
+	document.getElementById("leftSideF").style.display = "none";
+	document.getElementById("rightSideF").style.display = "none";
+	document.getElementById("FlipSide").style.display = "inline-block";	}
+
+	function goForm() {
+		document.getElementById("detailTab").style.background = "#524567";
+		document.getElementById("simTab").style.background = "#231e2b";
+		document.	getElementById("leftSideF").style.display = "inline-block";
+		document.	getElementById("rightSideF").style.display = "inline-block";
+		document.getElementById("FlipSide").style.display = "none";  }
+		
+
+
+		</script>
+		<link rel="stylesheet" href="includes/styleExperiments.css">
+
+		<section id="main"> 
+
+			<section id="toolBar">
+				<article id="view"> = </article>
+				<article id="new"> + </article> 
+				<article id="del"> # </article>	
+			</section>
+			<section class="mybreadCrums">
+				<div class="rcrumbs" id="breadcrumbs">
+					<ul>
+						<li><a href="/">Home</a><span class="divider">></span></li>
+						<li><a href="/Experiments">Experiments</a><span class="divider">></span></li>
+						<li>Modify Experiment</li>
+
+					</ul>
+				</div>
+			</section>
+
+			<!--INSERT INTO `flexiprice`.`experiments` (`user_id`, `category_id`, `experiment_name`, `experiment_desc`, `creation_date`, `last_modified`, `survey_link`, `show_prices`, `open_negotiation`, `use_min_price`, `private`, `active`) -->
+
+			<section id="formArea"> 
+				<article id="detailTab" onclick=goForm()>  Details </article>
+				<article id="simTab" onclick=goSimulations()>  Simulations </article>
+				{{#each items}}
+				<script type="text/javascript">
+				$(document).ready(function() {
+					if("{{show_prices}}" === "on")
+					{
+						document.getElementById("PriceOnOffSwitch").checked = true;
+					}
+
+					if("{{open_negotiation}}" === "on")
+					{
+						document.getElementById("BidOnOffSwitch").checked = true;
+					}
+
+					if("{{use_min_price}}" === "on")
+					{
+						document.getElementById("MinPriceOnOffSwitch").checked = true;
+					}
+
+					if("{{private}}" === "on")
+					{
+						document.getElementById("PrivateOnOffSwitch").checked = true;
+					}
+				});
+				</script>
+				<form action="/SubmitExperiment" method="post">
+					<fieldset>
+						<legend>Testy Test</legend>
+						<section id="leftSideF">
+
+							Experiment Name :<br>
+							<input class="inpStyle" type="text" name="name" value="{{experiment_name}}" > <br><br>
+
+							<p class = "textToRight"> Running since: {{creation_date}} </p> <br><br>
+
+							Experiment Description :<br>
+							<textarea class="msgStyle" name="message" rows="10" cols="30" >{{experiment_desc}} </textarea><br><br>
+
+							Maximum Tries : &nbsp &nbsp &nbsp
+							<input class="numStyle" type="number" name="points"  min="0" max="10" step="1" value="{{max_tries}}">
+							<br>
+
+							<input class="shareStyle" type="share" value="Share Link">
+
+						</section>
+
+						<section id="rightSideF">
+
+							The SurveyGizmo Code :<br>
+							<input class="inpStyle" type="text" name="survaypage" value="{{gizmo_code}}" ><br><br>
+
+							Associate with a Category : <br>
+							<select class="inpStyle" name="Categories">
+								{{#each categories}}
+								<option value="{{category_id}}">{{category_name}}</option>
+								{{/each}} 
+							</select><br><br>
+
+							Private : &nbsp &nbsp &nbsp&nbsp
+							<section class="onoffswitch">
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="PrivateOnOffSwitch">
+								<label class="onoffswitch-label" for="PrivateOnOffSwitch">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							</section>
+
+							&nbsp &nbsp &nbsp  &nbsp  &nbsp &nbsp &nbsp &nbsp&nbsp &nbsp Show Prices :
+							<section class="onoffswitch">
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="PriceOnOffSwitch">
+								<label class="onoffswitch-label" for="PriceOnOffSwitch">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							</section><br><br>
+
+							Negotiation : 
+							<section class="onoffswitch">
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="BidOnOffSwitch">
+								<label class="onoffswitch-label" for="BidOnOffSwitch">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							</section>
+
+							&nbsp &nbsp &nbsp  &nbsp  &nbsp &nbsp &nbsp &nbsp Mininum Price :
+							<section class="onoffswitch">
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="MinPriceOnOffSwitch">
+								<label class="onoffswitch-label" for="MinPriceOnOffSwitch">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							</section><br><br><br><br>
+
+
+							<input class="canStyle" type="cancel" value="Cancel"> <br>
+							<input class="subStyle" type="submit" value="Submit">
+						</section>
+
+						<section id="FlipSide">
+							<table id="keywords" cellspacing="0" cellpadding="0">
+								<thead>
+									<tr>
+										<th><span>#</span></th>
+										<th><span>Date</span></th>
+										<th><span>Subjects</span></th>
+										<th><span>Comments</span></th>
+										<th><span>Export</span></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="lalign">1</td>
+										<td>Data Cell</td>
+										<td>Data Cell</td>
+										<td>Data Cell</td>
+										<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
+											<label for="cb1"> </label><br></td>
+										</tr>
+										<tr>
+											<td class="lalign">2</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb2" name="cb" value="">
+												<label for="cb2"> </label></td>
+											</tr>
+											<tr>
+												<td class="lalign">3</td>
+												<td>Data Cell</td>
+												<td>Data Cell</td>
+												<td>Data Cell</td>
+												<td><input class="dotBox" type="checkbox" id="cb3" name="cb" value="">
+													<label for="cb3"> </label></td>
+												</tr>
+												<tr>
+													<td class="lalign">4</td>
+													<td>Data Cell</td>
+													<td>Data Cell</td>
+													<td>Data Cell</td>
+													<td><input class="dotBox" type="checkbox" id="cb4" name="cb" value="">
+														<label for="cb4"> </label></td>
+													</tr>
+													<tr>
+														<td class="lalign">5</td>
+														<td>Data Cell</td>
+														<td>Data Cell</td>
+														<td>Data Cell</td>
+														<td><input class="dotBox" type="checkbox" id="cb5" name="cb" value="">
+															<label for="cb5"> </label></td>
+														</tr>
+														<tr>
+															<td class="lalign">6</td>
+															<td>Data Cell</td>
+															<td>Data Cell</td>
+															<td>Data Cell</td>
+															<td><input class="dotBox" type="checkbox" id="cb6" name="cb" value="">
+																<label for="cb6"> </label></td>
+															</tr>
+														</tbody>
+													</table> <br>
+
+													<input class="exportStyle" type="export" value="Export Data">
+
+												</section>	
+
+											</fieldset>
+										</form>
+
+										{{/each}} 
+
+									</section>
+
+								</section>
+
+

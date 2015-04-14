@@ -10,11 +10,14 @@ var express = require('express'),
     LocalStrategy = require('passport-local'),
     TwitterStrategy = require('passport-twitter'),
     GoogleStrategy = require('passport-google'),
-    FacebookStrategy = require('passport-facebook');
+    FacebookStrategy = require('passport-facebook'),
+    aws = require('aws-sdk');
 
 var path = require('path');
-//
-//
+
+var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
+var S3_BUCKET = process.env.S3_BUCKET
 
 
 //We will be creating these two files shortly
@@ -143,7 +146,9 @@ app.post('/login', passport.authenticate('local-signin', {
   })
 );
 
-
+app.get('/local-reg', function(req, res){
+  res.render('register', {user: req.user});
+});
 
 //logs user out of site, deleting them from the session, and returns to homepage
 app.get('/logout', function(req, res){
@@ -154,18 +159,297 @@ app.get('/logout', function(req, res){
   req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
+// === Experiments related routes ===
+//Experiments page
 app.get('/Experiments', function(req, res){
-  res.render('Experiments/experiments', {user: req.user});
+  console.log("User id: " + req.user.user_id);
+
+  funct.getExperiments(req.user.user_id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+          res.render('Experiments/experiments', {user: req.user, items: itemsList});
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+ 
 });
 
+//Go to -> Add new experiment page
+app.get('/NewExperiment', function(req, res){
+ funct.getCategories(req.user.user_id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+          res.render('Experiments/addNewExperiment', {user: req.user, items: itemsList});
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+//Submit new experiment
+app.post('/SubmitExperiment' , function(req, res){
+  console.log(req.user.user_id);
+  funct.newExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.tries, req.user.user_id, req.body.negotiationOnOffSwitch, req.body.minPriceOnOffSwitch);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/Experiments'}
+  );
+  res.end();
+});
+
+// //Modify experiment
+// app.get('/ModifyExperiment:id' , function(req, res){
+//   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+//   console.log("experiment_id: " + id)
+//   funct.getExperiment(id)
+//     .then(function (itemsList) {
+//       if (itemsList) {
+//          console.log("Items length:" + itemsList.length);
+//          console.log (itemsList);
+//          res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList});
+//         done(null, itemsList);
+//       }
+//       if (!itemsList) {
+//         console.log("COULD NOT FIND");
+//         done(null, itemsList);
+//       }
+//     })
+//     .fail(function (err){
+//       console.log("**** Error: " + err.body);
+//     });
+// });
+
+//Modify experiment : needs experiment details, categories, experiment iterations
+app.get('/ModifyExperiment:id' , function(req, res){
+  var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id)
+  funct.getExperiment(id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+        // console.log (itemsList);
+        // res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList});
+        
+
+        funct.getCategories(req.user.user_id)
+        .then(function (categoriesList) {
+          if (categoriesList) {
+             console.log("Items length:" + categoriesList.length);
+             console.log (categoriesList);
+              res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList, categories:categoriesList});
+            done(null, itemsList, categoriesList);
+          }
+          if (!categoriesList) {
+            console.log("COULD NOT FIND");
+            done(null, categoriesList);
+          }
+        })
+        .fail(function (err){
+          console.log("**** Error: " + err.body);
+        });
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+
+// === Categories related routes ===
+//Categories page
 app.get('/Categories', function(req, res){
-  res.render('Categories/categories', {user: req.user});
+  console.log("User id: " + req.user.user_id);
+
+  funct.getCategories(req.user.user_id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+          res.render('Categories/categories', {user: req.user, items: itemsList});
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
 });
 
-app.get('/local-reg', function(req, res){
-  res.render('register', {user: req.user});
+
+//Go to -> Add new category page
+app.get('/NewCategory', function(req, res){
+   res.render('Categories/addNewCategory', {user: req.user});
 });
 
+//Submit new category
+app.post('/SubmitCategory' , function(req, res){
+  console.log(req.user.user_id);
+  funct.newCategory(req.body.name, req.body.message, req.user.user_id)
+      .then(function (item) {
+      if (item) {
+         console.log("Items length:" + item.length);
+         console.log (item);
+         res.writeHead(301,
+            {Location: '/addNewProduct:'+item[0].category_id}
+          );
+          res.end();
+
+        done(null, item);
+      }
+      if (!item) {
+        console.log("COULD NOT FIND");
+        done(null, item);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+//Modify category - need Category details + products related to category
+app.get('/ShowCategory:id' , function(req, res){
+  var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("category_id: " + id)
+
+  funct.getCategory(id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+
+        funct.getProducts(id)
+            .then(function (productsList) {
+              if (productsList) {
+                 console.log("Items length:" + productsList.length);
+                 console.log (productsList);
+                 res.render('Categories/showCategory', {user: req.user, items: productsList, category:itemsList});
+                 done(null, productsList, itemsList);
+              }
+              if (!productsList) {
+                 console.log("COULD NOT FIND");
+                done(null, productsList);
+              }
+            })
+            .fail(function (err){
+              console.log("**** Error: " + err.body);
+             });
+
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+//Add new product page
+app.get('/addNewProduct:id', function(req, res){
+  console.log("User id: " + req.user.user_id);
+
+  var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("category_id: " + id);
+
+    funct.getCategory(id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+          res.render('Categories/addNewProduct', {user: req.user, category: itemsList});
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+// //Submit new category
+// app.post('/SubmitProduct:id' , function(req, res){
+//   console.log(req.user.user_id);
+//    var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+//   console.log("category_id: " + id);
+
+//    console.log(req.user.user_id);
+//   funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, id, req.body.productType, req.body.webpage);
+//   //res.render('Experiments/experiments', {user: req.user});
+//   res.writeHead(301,
+//     {Location: '/ShowCategory:' + id}
+//   );
+//   res.end();
+// });
+
+//Submit new category
+app.post('/SubmitProduct:id' , function(req, res){
+  console.log(req.user.user_id);
+   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("category_id: " + id);
+
+   console.log(req.user.user_id);
+  funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, id, req.body.productType, req.body.webpage, req.body.file_url);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/ShowCategory:' + id}
+  );
+  res.end();
+});
+
+app.get('/sign_s3', function(req, res){
+    aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});
+    var s3 = new aws.S3();
+    var s3_params = {
+        Bucket: S3_BUCKET,
+        Key: req.query.s3_object_name,
+        Expires: 60,
+        ContentType: req.query.s3_object_type,
+        ACL: 'public-read'
+    };
+    s3.getSignedUrl('putObject', s3_params, function(err, data){
+        if(err){
+            console.log(err);
+        }
+        else{
+            var return_data = {
+                signed_request: data,
+                url: 'https://'+S3_BUCKET+'.s3.amazonaws.com/'+req.query.s3_object_name
+            };
+            res.write(JSON.stringify(return_data));
+            res.end();
+        }
+    });
+});
 
 //===============PORT=================
 var port = process.env.PORT || 5000; //select your port or let it pull from your .env file

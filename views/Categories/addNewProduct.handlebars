@@ -1,0 +1,118 @@
+<link rel="stylesheet" href="includes/styleProduct.css">
+<link rel="stylesheet" href="includes/upload.css">
+    <script type="text/javascript" src="includes/s3upload.js"></script> 
+
+<script type="text/javascript">
+function website() {
+	document.getElementById('weburl').disabled = false;
+	document.getElementById('fileUpload').disabled = true; 
+	document.getElementById('fileUpload').value = null;}
+	
+function fileup() {
+	document.getElementById('weburl').disabled = true;
+	document.getElementById('weburl').value = ""; 
+	document.getElementById('fileUpload').disabled = false;}
+	
+
+function none(){
+	document.getElementById('weburl').disabled = true;
+	document.getElementById('weburl').value = ""; 
+	document.getElementById('fileUpload').disabled = true;
+	document.getElementById('fileUpload').value = null;}
+</script>
+
+<section id="main"> 
+
+	<section id="toolBar">
+		<article id="view"> = </article>
+		<article id="new"> + </article> 
+		<article id="del"> # </article>	
+	</section>
+	<section class="mybreadCrums">
+      <div class="rcrumbs" id="breadcrumbs">
+           <ul>
+               <li><a href="/">Home</a><span class="divider">></span></li>
+               <li><a href="/Categories">Categories</a><span class="divider">></span></li>
+               {{#each category}}
+               <li><a href="/ShowCategory:{{category_id}}">{{category_name}}</a><span class="divider">></span></li>
+               {{/each}} 
+               <li>Add new Product</li>
+           </ul>
+       </div>
+   </section>
+	<section id="formArea">  {{#each category}}
+		<form action="/SubmitProduct:{{category_id}}" method="post">{{/each}} 
+			<fieldset>
+				<legend>Add a New Product</legend>
+				<section id="leftSideF">
+
+					Product's Name :<br>
+					<input class="inpStyle" type="text" name="name" ><br><br>
+
+					Product's Description :<br>
+					<textarea class="msgStyle" name="message" rows="10" cols="30" > </textarea><br><br><br><br>
+
+					Price : <input class="priceStyle" type="number" name="price">	
+					Minimum Price : <input class="priceStyle" type="number" name="MinPrice">					
+
+				</section>
+
+				<section id="rightSideF">
+
+					Product Type: <br><br>
+					<article class="lnkPlace">
+						<input type="radio" name="productType" value="URL" onclick="website()"> Website / Youtube Link : <br>
+						<input class="lnkStyle" type="url" name="webpage" id="weburl" placeholder="Paste a URL" disabled="disabled">
+					</article>
+					
+					<article class="filePlace">
+						<input type="radio" name="productType" value="Image" onclick="fileup()"> Upload a File : <br>
+						<input class="file-input" type="file" name="fileUpload" id="fileUpload" disabled="disabled">
+						<input type="hidden" id="file_url" name="file_url" value="/public/images/default.png" />
+					</article><br><br>
+
+					<article class="nonPlace"> 
+						<input type="radio" name="productType" value="None" onclick="none()"> None (You can change this later)<br><br><br><br>
+					</article><br><br><br><br><br><br>
+
+					<input class="addStyle" type="submit" value="Add a Product"> <br>
+					<input class="subStyle" type="submit" value="Submit">
+
+				</section>
+
+			</fieldset>
+		</form>
+
+	</section>
+
+</section>
+
+<script type="text/javascript">
+function s3_upload(){
+  
+    var url_elem = document.getElementById("file_url");
+ 
+    var s3upload = new S3Upload({
+        file_dom_selector: 'fileUpload',
+        s3_sign_put_url: '/sign_s3',
+
+       onProgress: function(percent, message) {
+            console.log(percent + '% ' + message);
+        },
+        onFinishS3Put: function(public_url) {        
+            url_elem.value = public_url;
+        },
+        onError: function(status) {
+            //status_elem.innerHTML = 'Upload error: ' + status;
+            console.log(status);
+        }
+    });
+}
+/*
+* Listen for file selection:
+*/
+(function() {
+    var input_element = document.getElementById("fileUpload");
+    input_element.onchange = s3_upload;
+})();
+</script>

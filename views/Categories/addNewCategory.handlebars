@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="includes/styleCategories.css">
+
+<script type="text/javascript">
+function NewCatAlert(){
+	 alert("Congrats! You have Created a New Category. Now, Create At Least One Item In It.");
+}
+</script>
+
+<section id="main"> 
+
+	<section id="toolBar">
+		<article id="viewDisabled"> = </article>
+		<article id="newUsed"> + </article> 
+		<article id="delDisabled"> # </article>	
+	</section>
+<section class="mybreadCrums">
+      <div class="rcrumbs" id="breadcrumbs">
+           <ul>
+               <li><a href="/">Home</a><span class="divider">></span></li>
+               <li><a href="/Categories">Categories</a><span class="divider">></span></li>
+               <li>Add new Category</li>
+             
+           </ul>
+       </div>
+   </section>
+	<section id="formArea"> 
+		<form action="/SubmitCategory" method="post">
+			<fieldset>
+				<legend>Add a New Category</legend>
+				<section id="newCat">
+
+					Category's Name :<br>
+					<input class="inpStyle" type="text" name="name" ><br><br>
+
+					Category's Description :<br>
+					<textarea class="msgStyle" name="message" rows="10" cols="30" > </textarea><br><br><br><br>
+
+					<!--<a href="/NewProduct"><article class="nxtStyle" value="Next"  Next </article> </a>-->
+					<input class="nxtStyle" type="submit" value="Next" onclick="NewCatAlert()">
+				</section>
+
+
+			</fieldset>
+		</form>
+
+	</section>
+
+</section>

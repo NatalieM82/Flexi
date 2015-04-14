@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="includes/styleCategories.css">
+<section id="main"> 
+	<section id="toolBar">
+		
+		<article id="view"> = </article>
+		{{#each category}}
+		<a href="/addNewProduct:{{category_id}}"><article id="new"> + </article></a>
+ 		{{/each}} 
+		<article id="del"> # </article>
+		
+	</section>
+	<section class="mybreadCrums">
+		<div class="rcrumbs" id="breadcrumbs">
+			<ul>
+				<li><a href="/">Home</a><span class="divider">></span></li>
+				<li><a href="/Categories">Categories</a><span class="divider">></span></li>
+				{{#each category}}
+               <li>{{category_name}}</li>
+               {{/each}} 
+			</ul>
+		</div>
+	</section>
+
+	<section id="mainArea"> 
+		<section class="boxObj">
+			<section class="itemsTable">
+				<table id="keywords" cellspacing="0" cellpadding="0">
+					<thead>
+						<tr>
+							<th><span>Name</span></th>
+							<th><span>Description</span></th>
+							<th><span>value</span></th>
+							<th><span>Min Price</span></th>
+							<th><span>Type</span></th>
+							<th><span>Edit</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each items}}
+						<tr>
+							<td class="lalign">{{name}}</td>
+							<td>{{description}}</td>
+							<td>{{value}}</td>
+							<td>{{min_price}}</td>
+							<td>{{type}}</td>
+							<td><a class="cbp-vm-icon cbp-vm-add" href="/ShowCategory:{{product_id}}" id="{{product_id}}">Edit</a></td>
+						</tr>
+						{{/each}} 
+					</tbody>
+				</table>
+			</section>		
+		</section>
+	</section>
+
+
+</section>

@@ -1,128 +1,242 @@
 * {	margin: 0px;
 	padding: 0px; 
-	font-family: Arial, Helvetica, sans-serif;}
+	font-family: Arial, Helvetica, sans-serif;
+	color: white;}
 
-html {height: 100%; }
+	html {height: 100%; }
 
-body { height: 100%;
-		  background: linear-gradient(180deg, #1c1822,  #171519); }
+	body { height: 100%;
+		background: linear-gradient(180deg, #1c1822,  #171519); }
 
-#wrapper 	{position: relative;
-				height: 100%;
-				 width: 100%;
-				 background: radial-gradient(#1c1822,  #171519);
-				 //border: 1px solid white;}
-				 
-#trapper {margin: auto; 
-			   height: 100%;
-			   width: 90%;	
-			   //border: 1px solid white;}
-
-#topBar {position: fixed;
-		      top: 0px;
-			  left: 0px;
-			  background-color: #171519;
-			  height: 100px;
-			  width: 100%;
-			  border-bottom: 1px solid #77727d;
-			box-shadow: 0px 0px 5px 0px black;
-			//border-bottom: 1px solid white;}
-
-				#logo {position: absolute;
-						  top: 17px;
-						  left: 70px;
-						  width: 300px;
-						  height: 71px;
-						  background-image: url(../images/FP_Logo.png);
-						  background-size: 100%;
-						  background-repeat: no-repeat;
-						  //border:1px solid white;}
-						  
-				#user {position: absolute;
-						  top: 17px;
-						  right: 70px;
-						  width: 60px;
-						  height: 60px; 
-						  border-radius: 100px;
-						  border: 5px solid white;}
-				
-#main {background: radial-gradient(#241e2c, #241e2c , #171519);
+		#wrapper 	{position: relative;
 			height: 100%;
-			box-shadow: 0px 0px 15px 0px black; }
+			width: 100%;
+			background: radial-gradient(#1c1822,  #171519);
+			//border: 1px solid white;}
 
-				#toolBar {  position: fixed;
-							    top: 23%;
-							    left: 6%;
-							    vertical-align: middle;
-							    //background: white;
-								height: 60%;
-								width: 75px;
-								border-right: 1px solid #77727d; 
-								box-shadow: 2px 0px 0px 0px black;}
-								
-						#view {position: absolute;
-								  top: 10%;
-								  left: 0px;
-								  width: 50px;
-								  height: 50px; 
-								  border-radius: 100px;
-								  border: 5px solid white;
-								  color: white;
-								  font-size: 45px;
-								  text-align: center;}
-								  
-					    #new {position: absolute;
-								 top: 45%;
-								  left: 0px;
-								  width: 50px;
-								  height: 50px; 
-								  border-radius: 100px;
-								  border: 5px solid white;
-								  color: white;
-								  font-size: 45px;
-								  text-align: center;}
-								  
-						#del {position: absolute;
-								  bottom: 10%;
-								  left: 0px;
-								  width: 50px;
-								  height: 50px; 
-								  border-radius: 100px;
-								  border: 5px solid white;
-								  color: white;
-								  font-size: 45px;
-								  text-align: center;}
-				
-#bottomBar {position: fixed;
-					bottom: 0px;
+			#trapper {margin: auto; 
+				height: 100%;
+				width: 90%;	
+				//border: 1px solid white;}
+
+				#topBar {position: fixed;
+					top: 0px;
 					left: 0px;
 					background-color: #171519;
-					height: 50px;
-					width:100%;
-					border-top: 1px solid #77727d;
+					height: 100px;
+					width: 100%;
+					border-bottom: 1px solid #77727d;
 					box-shadow: 0px 0px 5px 0px black;
-					//border-top: 1px solid white; }
+					//border-bottom: 1px solid white;}
 
-				   
-				#footer_menu {position: absolute;
-									  top: 10px;
-									  left: 70px;
-									  width: 300px;
-									  height: 30px;									  
-									  //border: 1px solid white; }
-				
-						li {display: inline;
-						   color: white;
-						   font-size: 28px;
-						   padding-right: 50px;}
-						   
-				#surveyLogo {position: absolute;
-									  top: 10px;
-									  right: 70px;
-									  width: 170px;
-									  height: 30px;		
-									  color: white;
-						  			  font-size: 28px;							  
-									  //border: 1px solid white; }
+					#logo {position: absolute;
+						top: 17px;
+						left: 70px;
+						width: 300px;
+						height: 71px;
+						background-image: url(../images/FP_Logo.png);
+						background-size: 100%;
+						background-repeat: no-repeat;
+						//border:1px solid white;}
+
+						#user {position: absolute;
+							top: 17px;
+							right: 70px;
+							width: 60px;
+							height: 60px; 
+							border-radius: 100px;
+							border: 5px solid white;}
+
+							#main {background: radial-gradient(#241e2c, #241e2c , #171519);
+								height: 100%;
+								box-shadow: 0px 0px 15px 0px black; }
+
+								#toolBar {  position: fixed;
+									top: 23%;
+									left: 6%;
+									vertical-align: middle;
+									//background: white;
+									height: 60%;
+									width: 75px;
+									border-right: 1px solid #77727d; 
+									box-shadow: 2px 0px 0px 0px black;}
+
+									#view {position: absolute;
+										top: 10%;
+										left: 0px;
+										width: 50px;
+										height: 50px; 
+										border-radius: 100px;
+										border: 5px solid white;
+										color: white;
+										font-size: 45px;
+										text-align: center;}
+
+										#new {position: absolute;
+											top: 45%;
+											left: 0px;
+											width: 50px;
+											height: 50px; 
+											border-radius: 100px;
+											border: 5px solid white;
+											color: white;
+											font-size: 45px;
+											text-align: center;}
+
+											#del {position: absolute;
+												bottom: 10%;
+												left: 0px;
+												width: 50px;
+												height: 50px; 
+												border-radius: 100px;
+												border: 5px solid white;
+												color: white;
+												font-size: 45px;
+												text-align: center;}
+
+												#mainArea { position: relative;
+													top: 5%;
+													left: 15%;
+													width: 80%;
+													height: 70%;
+													font-size: 100%;
+													//border: 1px solid white;}
+
+													#boxObj {position: absolute;
+													}
+
+													form { color: white;
+														height: 100%;}
+
+														fieldset { position: relative;
+															padding: 25px;
+															border-radius: 15px;
+															border: 1px dashed #77727d;
+															height: 80%;}
+
+															#newCat {position: absolute;
+																top: 10%;
+																left: 30%;
+																width: 40%;
+																height: 80%;
+																//border: 1px solid white;
+																display: inline-block;}
+
+																.inpStyle { background-color:  #171519;
+																	border: 1px dashed #77727d;
+																	border-radius: 3px;
+																	resize: none;
+																	width: 90%;
+																	height: 10%;
+																	padding-left: 10px;
+																	box-sizing: border-box;}
+
+																	.msgStyle { background-color:  #171519;
+																		border: 1px dashed #77727d;
+																		border-radius: 3px;
+																		resize: none;
+																		width: 90%;}
+
+																		.subStyle { position: relative;
+																			left: 60%;
+																			bottom: 0%;
+																			background-color:  #5fa088;
+																			border: 1px outset  #77727d;
+																			border-radius: 3px;
+																			resize: none;
+																			font-size: 150%;
+																			width: 30%;
+																			height: 10%;}
+
+																			.nxtStyle {position: absolute;
+																				right: 50px;
+																				padding-top: 7px;
+																				box-sizing: border-box;
+																				text-align: center;
+																				background-color:  #cc9253;
+																				border: 1px outset  #77727d;
+																				border-radius: 3px;
+																				resize: none;
+																				font-size: 150%;
+																				width: 30%;
+																				height: 10%;}
+
+																				#bottomBar {position: fixed;
+																					bottom: 0px;
+																					left: 0px;
+																					background-color: #171519;
+																					height: 50px;
+																					width:100%;
+																					border-top: 1px solid #77727d;
+																					box-shadow: 0px 0px 5px 0px black;
+																					//border-top: 1px solid white; }
 
 
+																					#footer_menu {position: absolute;
+																						top: 10px;
+																						left: 70px;
+																						width: 300px;
+																						height: 30px;									  
+																						//border: 1px solid white; }
+
+																						li {display: inline;
+																							color: white;
+																							font-size: 28px;
+																							padding-right: 50px;}
+
+																							#surveyLogo {position: absolute;
+																								top: 10px;
+																								right: 70px;
+																								width: 170px;
+																								height: 30px;		
+																								color: white;
+																								font-size: 28px;							  
+																								//border: 1px solid white; }
+
+
+																								#itemsTable {position: absolute;
+																									top: 23%;
+																									left: 20%;
+																									width: 57%;
+																									height: 85%;
+																									//border: 1px solid white;}
+#formArea { position: absolute;
+                            top: 21%;
+                            left: 20%;
+                            width: 70%;
+                            height: 70%;
+                            font-size: 100%;
+                            //border: 1px solid white;}
+
+#viewDisabled {position: absolute;
+                                  top: 10%;
+                                  left: 0px;
+                                  width: 50px;
+                                  height: 50px; 
+                                  border-radius: 100px;
+                                  border: 5px solid gray;
+                                  color: gray;
+                                  font-size: 45px;
+                                  text-align: center;}
+                                  
+                        #newUsed {position: absolute;
+                                 top: 45%;
+                                  left: 0px;
+                                  width: 50px;
+                                  height: 50px; 
+                                  border-radius: 100px;
+                                  border: 5px solid #5fa088;
+                                  color: white;
+                                  font-size: 45px;
+                                  text-align: center;}
+                                  
+                        #delDisabled {position: absolute;
+                                  bottom: 10%;
+                                  left: 0px;
+                                  width: 50px;
+                                  height: 50px; 
+                                  border-radius: 100px;
+                                  border: 5px solid gray;
+                                  color: gray;
+                                  font-size: 45px;
+                                  text-align: center;}

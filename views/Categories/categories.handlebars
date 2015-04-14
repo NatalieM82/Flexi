@@ -1,10 +1,46 @@
-
+<link rel="stylesheet" href="includes/styleCategories.css">
 <section id="main"> 
 	<section id="toolBar">
 		
 		<article id="view"> = </article>
-		<article id="new"> + </article>
+		<a href="/NewCategory"><article id="new"> + </article></a>
 		<article id="del"> # </article>
 		
 	</section>
+	<section class="mybreadCrums">
+		<div class="rcrumbs" id="breadcrumbs">
+			<ul>
+				<li><a href="/">Home</a><span class="divider">></span></li>
+				<li>Categories</li>
+
+			</ul>
+		</div>
+	</section>
+
+	<section id="mainArea"> 
+		<section class="boxObj">
+			<section class="itemsTable">
+				<table id="keywords" cellspacing="0" cellpadding="0">
+					<thead>
+						<tr>
+							<th><span>Name</span></th>
+							<th><span>Number of items</span></th>
+							<th><span>Edit</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each items}}
+						<tr>
+							<td class="lalign">{{category_name}}</td>
+							<td>{{products_number}}</td>
+							<td><a class="cbp-vm-icon cbp-vm-add" href="/ShowCategory:{{category_id}}" id="{{category_id}}">Edit</a></td>
+						</tr>
+						{{/each}} 
+					</tbody>
+				</table>
+			</section>		
+		</section>
+	</section>
+
+
 </section>

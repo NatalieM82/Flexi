@@ -1,0 +1,94 @@
+   <link rel="stylesheet" href="includes/styleExperiments.css">
+
+   <section id="main"> 
+
+   	<section id="toolBar">
+   		<article id="view"> = </article>
+   		<article id="new"> + </article> 
+   		<article id="del"> # </article>	
+   	</section>
+<section class="mybreadCrums">
+      <div class="rcrumbs" id="breadcrumbs">
+           <ul>
+               <li><a href="/">Home</a><span class="divider">></span></li>
+               <li><a href="/Experiments">Experiments</a><span class="divider">></span></li>
+               <li>Add new Experiment</li>
+             
+           </ul>
+       </div>
+   </section>
+   	<section id="formArea"> 
+   		<form action="/SubmitExperiment" method="post">
+   			<fieldset>
+   				<legend>Add a New Experiment</legend>
+   				<section id="leftSideF">
+
+   					Experiment Name :<br>
+   					<input class="inpStyle" type="text" name="name" ><br><br>
+
+   					Experiment Description :<br>
+   					<textarea class="msgStyle" name="description" rows="10" cols="30" > </textarea><br><br><br><br>
+
+   					&nbsp &nbsp Private : 
+   					<section class="onoffswitch">
+   						<input type="checkbox" name="PrivateOnOffSwitch" class="onoffswitch-checkbox" id="PrivateOnOffSwitch">
+   						<label class="onoffswitch-label" for="PrivateOnOffSwitch">
+   							<span class="onoffswitch-inner"></span>
+   							<span class="onoffswitch-switch"></span>
+   						</label>
+   					</section>
+
+   				</section>
+
+   				<section id="rightSideF">
+
+   					The SurveyGizmo Code :<br>
+   					<input class="inpStyle" type="text" name="survaypage"><br><br>
+
+   					Associate with a Category : <br>
+   					<select class="inpStyle" name="Categories">
+                     {{#each items}}
+   						   <option value="{{category_id}}">{{category_name}}</option>
+                     {{/each}} 
+   					</select><br><br>
+
+   					Show Prices &nbsp &nbsp &nbsp&nbsp
+   					<section class="onoffswitch">
+   						<input type="checkbox" name="PriceOnOffSwitch" class="onoffswitch-checkbox" id="PriceOnOffSwitch">
+   						<label class="onoffswitch-label" for="PriceOnOffSwitch">
+   							<span class="onoffswitch-inner"></span>
+   							<span class="onoffswitch-switch"></span>
+   						</label>
+   					</section><br><br>
+
+                  Open negotiation 
+                  <section class="onoffswitch">
+                     <input type="checkbox" name="negotiationOnOffSwitch" class="onoffswitch-checkbox" id="negotiationOnOffSwitch">
+                     <label class="onoffswitch-label" for="negotiationOnOffSwitch">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                     </label>
+                  </section><br><br>
+
+                  Use min price &nbsp &nbsp &nbsp
+                  <section class="onoffswitch">
+                     <input type="checkbox" name="minPriceOnOffSwitch" class="onoffswitch-checkbox" id="minPriceOnOffSwitch">
+                     <label class="onoffswitch-label" for="minPriceOnOffSwitch">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                     </label>
+                  </section><br><br>
+
+   					Maximum Tries : &nbsp &nbsp &nbsp
+   					<input class="numStyle" type="number" name="tries"  min="0" max="10" step="1" value="0">
+   					<br><br><br>
+
+
+   					<input class="subStyleNew" type="submit" value="Submit">
+   				</section>
+   			</fieldset>
+   		</form>
+
+   	</section>
+
+   </section>
