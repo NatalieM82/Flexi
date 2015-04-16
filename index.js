@@ -206,7 +206,7 @@ app.get('/NewExperiment', function(req, res){
 //Submit new experiment
 app.post('/SubmitExperiment' , function(req, res){
   console.log(req.user.user_id);
-  funct.newExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.tries, req.user.user_id, req.body.negotiationOnOffSwitch, req.body.minPriceOnOffSwitch);
+  funct.newExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.tries, req.user.user_id, req.body.negotiationOnOffSwitch, req.body.minPriceOnOffSwitch, req.body.wallet);
   //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/Experiments'}
@@ -418,7 +418,9 @@ app.post('/SubmitProduct:id' , function(req, res){
   console.log("category_id: " + id);
 
    console.log(req.user.user_id);
-  funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, id, req.body.productType, req.body.webpage, req.body.file_url);
+   //req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id
+   //console.log("Link: " +req.body.webpage+" File: " + req.body.file_url);
+  funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
   //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/ShowCategory:' + id}
@@ -451,20 +453,27 @@ app.get('/sign_s3', function(req, res){
     });
 });
 
-
-
 //Running Experiment!!!!!
-app.get('/experiment:id', function(req, res){
+app.get('/experimentWelcomePage:id', function(req, res){
   
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
 
-    funct.getExperiment(id)
+ res.render('experimentWelcomePage', {layout: false, experimentId:id});
+});
+
+//Running Experiment!!!!!
+app.post('/SubmitToExperiment:experimentId', function(req, res){
+  
+  var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id);
+  console.log("Experimenter name: " + req.body.name);
+    funct.getRunningExperiment(id)
     .then(function (itemsList) {
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
          console.log (itemsList);
-          res.render('experiment', {layout: false, experiment: itemsList});
+          res.render('experiment', {layout: false, details: itemsList});
         done(null, itemsList);
       }
       if (!itemsList) {
@@ -477,6 +486,23 @@ app.get('/experiment:id', function(req, res){
     });
 });
 
+
+//Submit new category
+// app.post('/SubmitProduct:id' , function(req, res){
+//   console.log(req.user.user_id);
+//    var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+//   console.log("category_id: " + id);
+
+//    console.log(req.user.user_id);
+//    //req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id
+//    //console.log("Link: " +req.body.webpage+" File: " + req.body.file_url);
+//   funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
+//   //res.render('Experiments/experiments', {user: req.user});
+//   res.writeHead(301,
+//     {Location: '/ShowCategory:' + id}
+//   );
+//   res.end();
+// });
 
 //===============PORT=================
 var port = process.env.PORT || 5000; //select your port or let it pull from your .env file

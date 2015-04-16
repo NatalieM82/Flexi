@@ -14,26 +14,13 @@
 
 
   <link rel="stylesheet" href="includes/runningExperimentStyle.css">
+   <script src="includes/jquery.tablesorter.js"></script>
+   <link rel="stylesheet" href="includes/table.css">
+
 
  </head>
-
- <body>
-
-
-  {{#if user}}
-      
-  {{/if}}
-
-  
-
-      <!--where our other templates will insert-->
-  {{{body}}}
-
+<body>
   <section id="wrapper">
-
-
-
-
     <section id="main"> 
 
       <section id="top">
@@ -41,17 +28,86 @@
           Your Current Score is: <article id="score"></article> 
         </section>
         <section id="walletArea">
-          Your current Wallet: NULL
+          Your current Wallet: <article id="wallet"></article> 
         </section>
       </section>
       
-      <section id="gizmoContainer">
+       <section id="gizmoContainer">
+         <script type="text/javascript" >document.write('<script src="http' + (("https:" == document.location.protocol) ? "s" : "") + '://www.surveygizmo.com/s3/2001719/Testy-Test?__output=embedjs&__ref=' + escape(document.location) + '" type="text/javascript" ></scr' + 'ipt>');                                  </script> 
+         <noscript>This survey is powered by SurveyGizmo's <a href="http://www.surveygizmo.com">online survey software</a>. <a href="http://www.surveygizmo.com/s3/2001719/Testy-Test?jsfallback=true">Please take my survey now</a>                                   </noscript>
+<!--<script type="text/javascript">
+varTitle = $('#gizmoContainer').html("{{details.1.gizmo_code}}");
+  jQuery.globalEval( varTitle );
+</script>-->
+      
+      </section>
+        <!-- <script type="text/javascript">        
+          
+           // var temp = {{gizmo_code}};
+             // document.getElementById("gizmoContainer").innerHTML =  temp; 
 
-       {{gizmo_code}}
-        
-        <script>
+             varTitle = $('#gizmoContainer').html("{{details.1.gizmo_code}}").text();
+             document.getElementById("gizmoContainer").innerHTML =  varTitle; 
+            //   console.log(varTitle);
+            //  $("gizmoContainer").click(function(){
+            //     $.getScript(varTitle);
+            // });
+         
+       
+      </script>-->
+
+      <section id="formArea"> 
+        <form action="action_page.php">
+          <section id="objContainer">
+            You buy an item which might help you solve this question: <br><br>
+            Make an offer : <input class="inpStyle" type="text" name="name">
+            <input class="conStyle" type="submit" value="Confirm"><br><br><br><br>
+            
+            You can choose only one : <br><br>
+
+            <table id="keywords" cellspacing="0" cellpadding="0">
+              <thead>
+                <tr>
+                  <th><span>Name</span></th>
+                  <th><span>Price</span></th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {{#each details}}
+                  <tr>
+                    <td class="lalign"><a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" onclick="myFunction('{{path}}', {{value}})">{{name}}</a></td>
+                    <td>{{value}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </section>  
+        </form>   
+      </section>
+
+    </section>  
+  </section>  
+</body>
+</html>
+
+<script>
+var lastScore;
+          
         window.onload = function() {
-          var lastScore;
+          if (typeof(Storage) != "undefined") {
+                // Store
+                //localStorage.setItem("wallet", {{details.1.starting_wallet}});
+                // Retrieve
+                if (sessionStorage.getItem("wallet") === null) {
+                    sessionStorage.setItem("wallet", {{details.1.starting_wallet}});
+                }
+                console.log(sessionStorage.getItem("wallet"));
+
+                document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+            } else {
+                document.getElementById("wallet").innerHTML = "Sorry, your browser does not support Web Storage...";
+            }
           try {
             var id = document.getElementsByClassName("sg-type-script")[0].innerText;
             document.getElementsByClassName("sg-type-script")[0].style.visibility = "hidden";
@@ -59,6 +115,7 @@
             var numberPattern = /\d+/g;
             score = score.match(numberPattern);
             document.getElementById("score").innerHTML += score;
+            
           } 
           catch(err) {
             var score = document.getElementsByClassName("sg-question-options")[0].innerText;
@@ -68,35 +125,21 @@
             if (score) {
               lastScore = score;
             }
-            document.getElementById("score").innerHTML += lastScore;
+            document.getElementById("score").innerHTML = lastScore;
           }
         };
-        </script>
-        
-      </section>
-      
-      
-      <section id="formArea"> 
-        <form action="action_page.php">
-          <section id="objContainer">
-            You buy an item which might help you solve this question: <br><br>
-            Make an offer : <input class="inpStyle" type="text" name="name" >
-            <input class="conStyle" type="submit" value="Confirm"><br><br><br><br>
-            
-            You can choose only one : <br><br>
-          </section>  
-        </form>   
-      </section>
-      
-    </section>
-    
-    
-    
-    
-  </section>  
 
+        function myFunction(path, price) {
+    
+          if (confirm("Do you want to make a purchase?") == true) {
+              window.open(path, '_blank');
+              sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - price);
+              document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+              console.log(sessionStorage.getItem("wallet"));
 
-
-</body>
-</html>
-
+          } else {
+              
+          }
+    
+        }
+</script>

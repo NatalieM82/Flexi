@@ -72,7 +72,7 @@ exports.localAuth = function (usernameNew, passwordNew) {
            "username": rows[i].username,
            "password": rows[i].password,
            "user_id": rows[i].user_id,
-           "avatar": "http://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png"
+           "avatar": rows[i].avatar
          }
          deferred.resolve(user);
        } else {
@@ -90,7 +90,7 @@ exports.localAuth = function (usernameNew, passwordNew) {
 
 //INSERT INTO `flexiprice`.`experiments` (`user_id`, `category_id`, `experiment_name`, `experiment_desc`, `creation_date`, `last_modified`, `survey_link`, `show_prices`, `open_negotiation`, `use_min_price`, `private`, `active`) 
 //VALUES ('1', '1', 'hello', 'something', '12/04/15', '15/04/15', 'link.com', '1', '0', '0', '0', '1');
-exports.newExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice) {
+exports.newExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet) {
   console.log("==== Adding new experiment ====");
   console.log(name + " " + description + " " + privateExp + " " + embbedCode + " " + category + " " + showPrices  + " " + tries);
 
@@ -110,6 +110,10 @@ exports.newExperiment = function (name, description, privateExp, embbedCode, cat
     useMinPrice = 'off';
   }
 
+  if(!tries) {
+    tries = 0;
+  }
+
   var today = getTodayDate();
 
   var post = {
@@ -125,7 +129,8 @@ exports.newExperiment = function (name, description, privateExp, embbedCode, cat
     use_min_price: useMinPrice,
     private: privateExp,
     active: '1',
-    max_tries: tries
+    max_tries: tries,
+    starting_wallet: wallet
   }
 
   pool.getConnection(function (err, connection){
@@ -308,10 +313,23 @@ exports.getProducts = function (category_id) {
 
 //INSERT INTO `flexiprice`.`products` (`category_id`, `description`, `type`, `name`, `value`) 
 //VALUES ('2', 'something', 'url', 'Product1', '20');
-exports.newProduct = function (name, description, value, min_price, category_id, type, url, file_url) {
+//req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id
+exports.newProduct = function (name, description, value, min_price, url, file_url, type, category_id) {
   console.log("==== Adding new Product ====");
   console.log(name + " " + description + " " + value + " " + min_price + " " + category_id);
 
+ var final_url;
+  if (url == null && file_url !=null)
+  {
+    final_url = file_url;
+  }
+
+
+  if (url != null && file_url == "")
+  {
+    final_url = url;
+  }
+    console.log("Link: " +url+" File: " + file_url + " Final:" +final_url);
 
   var post = {
     category_id: category_id,
@@ -319,21 +337,11 @@ exports.newProduct = function (name, description, value, min_price, category_id,
     description : description,
     value: value,
     type: type,
+    path:final_url, 
     min_price: min_price
   }
 
-  var final_url;
-  if (url == null && file_url !=null)
-  {
-    final_url = file_url;
-  }
-
-
-  if (url != null && file_url ==null)
-  {
-    final_url = url;
-  }
-
+ 
 
   pool.getConnection(function (err, connection){
     connection.query('INSERT INTO flexiprice.products SET ?', post, function (err, result) {
@@ -350,14 +358,14 @@ exports.newProduct = function (name, description, value, min_price, category_id,
            product_id:result.insertId
           }
         
-        connection.query('INSERT INTO flexiprice.files SET ?', post2, function (err, result) {
-          if (err != null) {
-            console.log(err);
-          }
-          if (err == null) {                           
-          }
+        // connection.query('INSERT INTO flexiprice.files SET ?', post2, function (err, result) {
+        //   if (err != null) {
+        //     console.log(err);
+        //   }
+        //   if (err == null) {                           
+        //   }
              
-        });
+        // });
       }
           connection.end();
     });
@@ -382,4 +390,27 @@ exports.updateCategory = function (wanted) {
 
 }
 
+//SELECT * FROM experiments INNER JOIN products ON experiments.category_id = products.category_id And experiments.experiment_id = 12;
+
+exports.getRunningExperiment = function (experiment_id) {
+  var deferred = Q.defer();
+ 
+   pool.getConnection(function (err, connection) {
+   var sql = 'SELECT * FROM experiments INNER JOIN products ON experiments.category_id = products.category_id And experiments.experiment_id =?;'
+     connection.query(sql, experiment_id , function (err, rows) {
+    if (err!= null) {
+      console.log("Error finding running experiment" + err);
+      deferred.reject(new Error(err.body));
+    }
+
+    if (err == null) {
+         deferred.resolve(rows);
+       }  
+       connection.end();
+    
+    });
+   });
+
+  return deferred.promise;
+}
 

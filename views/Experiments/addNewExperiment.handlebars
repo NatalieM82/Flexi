@@ -29,14 +29,11 @@
    					Experiment Description :<br>
    					<textarea class="msgStyle" name="description" rows="10" cols="30" > </textarea><br><br><br><br>
 
-   					&nbsp &nbsp Private : 
-   					<section class="onoffswitch">
-   						<input type="checkbox" name="PrivateOnOffSwitch" class="onoffswitch-checkbox" id="PrivateOnOffSwitch">
-   						<label class="onoffswitch-label" for="PrivateOnOffSwitch">
-   							<span class="onoffswitch-inner"></span>
-   							<span class="onoffswitch-switch"></span>
-   						</label>
-   					</section>
+   					Max Tries : &nbsp  
+<input class="numStyle" type="number" name="points"  min="0" max="10" step="1" value="0">
+
+ &nbsp &nbsp &nbsp  Wallet : &nbsp  
+<input class="numStyle" type="number" name="wallet" min="0"><br>
 
    				</section>
 
@@ -52,36 +49,41 @@
                      {{/each}} 
    					</select><br><br>
 
-   					Show Prices &nbsp &nbsp &nbsp&nbsp
-   					<section class="onoffswitch">
-   						<input type="checkbox" name="PriceOnOffSwitch" class="onoffswitch-checkbox" id="PriceOnOffSwitch">
-   						<label class="onoffswitch-label" for="PriceOnOffSwitch">
-   							<span class="onoffswitch-inner"></span>
-   							<span class="onoffswitch-switch"></span>
-   						</label>
-   					</section><br><br>
+   					Private : &nbsp &nbsp &nbsp&nbsp
+                     <section class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="PrivateOnOffSwitch">
+                        <label class="onoffswitch-label" for="PrivateOnOffSwitch">
+                           <span class="onoffswitch-inner"></span>
+                           <span class="onoffswitch-switch"></span>
+                        </label>
+                     </section>
 
-                  Open negotiation 
-                  <section class="onoffswitch">
-                     <input type="checkbox" name="negotiationOnOffSwitch" class="onoffswitch-checkbox" id="negotiationOnOffSwitch">
-                     <label class="onoffswitch-label" for="negotiationOnOffSwitch">
-                        <span class="onoffswitch-inner"></span>
-                        <span class="onoffswitch-switch"></span>
-                     </label>
-                  </section><br><br>
+                     &nbsp &nbsp &nbsp  &nbsp  &nbsp &nbsp &nbsp &nbsp&nbsp &nbsp Show Prices :
+                     <section class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="PriceOnOffSwitch">
+                        <label class="onoffswitch-label" for="PriceOnOffSwitch">
+                           <span class="onoffswitch-inner"></span>
+                           <span class="onoffswitch-switch"></span>
+                        </label>
+                     </section><br><br>
 
-                  Use min price &nbsp &nbsp &nbsp
-                  <section class="onoffswitch">
-                     <input type="checkbox" name="minPriceOnOffSwitch" class="onoffswitch-checkbox" id="minPriceOnOffSwitch">
-                     <label class="onoffswitch-label" for="minPriceOnOffSwitch">
-                        <span class="onoffswitch-inner"></span>
-                        <span class="onoffswitch-switch"></span>
-                     </label>
-                  </section><br><br>
+                     Negotiation : 
+                     <section class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="BidOnOffSwitch">
+                        <label class="onoffswitch-label" for="BidOnOffSwitch">
+                           <span class="onoffswitch-inner"></span>
+                           <span class="onoffswitch-switch"></span>
+                        </label>
+                     </section>
 
-   					Maximum Tries : &nbsp &nbsp &nbsp
-   					<input class="numStyle" type="number" name="tries"  min="0" max="10" step="1" value="0">
-   					<br><br><br>
+                     &nbsp &nbsp &nbsp  &nbsp  &nbsp &nbsp &nbsp &nbsp Mininum Price :
+                     <section class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="MinPriceOnOffSwitch">
+                        <label class="onoffswitch-label" for="MinPriceOnOffSwitch">
+                           <span class="onoffswitch-inner"></span>
+                           <span class="onoffswitch-switch"></span>
+                        </label>
+                     </section><br><br><br><br>
 
 
    					<input class="subStyleNew" type="submit" value="Submit">
