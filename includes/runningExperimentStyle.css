@@ -1,0 +1,94 @@
+* {	margin: 0px;
+	padding: 0px; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: white;}
+
+html {height: 100%; }
+
+body { height: 100%;
+		  background: linear-gradient(180deg, #1c1822,  #171519); }
+
+#wrapper 	{position: relative;
+				height: 100%;
+				width: 100%;
+		    	background: radial-gradient(#1c1822,  #171519);
+			   //border: 1px solid white;}
+				 
+				
+#main {//position: relative;
+	        background: radial-gradient(#241e2c, #241e2c , #171519);
+			height: 100%;
+			box-shadow: 0px 0px 15px 0px black; 
+			//border: 1px solid white;}
+
+			#top {// border: 1px solid black;
+					  position: relative;
+					  margin: auto;
+					  //margin-top:100px;
+					  //width: 550px;
+					  height: 50px;
+					  background: Black;
+					  color: white; }
+		  
+			#scoreArea { height: 20px;
+								 width: 190px;
+								 //border: 1px solid white;
+								 position: absolute;
+								 top: 15px;
+								 left: 30px;	}
+			
+			#score { display: inline;}
+			
+			#walletArea {height: 20px;
+								 width: 200px;
+								 //border: 1px solid white; 
+								 position: absolute;
+								 top: 15px;
+								 right: 10px; }
+			
+			#gizmoContainer {//position: absolute;
+										//top: 100px;
+										//margin-top: 150px;
+										width: 100%;
+										height: 100%;
+										border-bottom: 1px solid gray;
+										//display: inline-block;}
+					  
+				#formArea { //position: absolute;
+									//top: 660px;
+									//margin: 25px;
+									width: 100%;
+									height: 300px;
+									font-size: 100%;
+									//border: 1px solid white;}
+							
+					form { color: white;
+							  height: 100%;}
+
+										  
+								#objContainer {//position: absolute;
+												//top: 10%;
+												//left: 5%;
+												width: 600px;
+												height: 100px;
+												//border: 1px solid white;
+												//display: inline-block;}
+										 
+												.inpStyle { background-color:  #171519;
+																border: 1px dashed #77727d;
+																border-radius: 3px;
+																resize: none;
+																width: 70px;
+																height: 40px;
+																padding-left: 10px;
+																box-sizing: border-box;
+																display: inline-block;}
+																	
+																	
+												.conStyle { background-color:  #5fa088;
+																border: 1px outset  #77727d;
+																border-radius: 3px;
+																resize: none;
+																font-size: 150%;
+																width: 100px;
+																height: 40px;}

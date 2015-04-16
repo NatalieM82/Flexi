@@ -451,6 +451,33 @@ app.get('/sign_s3', function(req, res){
     });
 });
 
+
+
+//Running Experiment!!!!!
+app.get('/experiment:id', function(req, res){
+  
+  var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id);
+
+    funct.getExperiment(id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         console.log (itemsList);
+          res.render('experiment', {layout: false, experiment: itemsList});
+        done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
+
+
 //===============PORT=================
 var port = process.env.PORT || 5000; //select your port or let it pull from your .env file
 app.listen(port);

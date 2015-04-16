@@ -95,7 +95,6 @@ function s3_upload(){
     var s3upload = new S3Upload({
         file_dom_selector: 'fileUpload',
         s3_sign_put_url: '/sign_s3',
-
        onProgress: function(percent, message) {
             console.log(percent + '% ' + message);
         },
@@ -116,3 +115,4 @@ function s3_upload(){
     input_element.onchange = s3_upload;
 })();
 </script>
+

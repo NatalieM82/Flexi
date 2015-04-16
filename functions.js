@@ -119,7 +119,7 @@ exports.newExperiment = function (name, description, privateExp, embbedCode, cat
     experiment_desc : description,
     creation_date: today,
     last_modified: today,
-    gizmo_code: 'something',
+    gizmo_code: embbedCode,
     show_prices: showPrices,
     open_negotiation: openNegotiation,
     use_min_price: useMinPrice,
