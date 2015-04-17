@@ -464,15 +464,33 @@ app.get('/experimentWelcomePage:id', function(req, res){
 
 //Running Experiment!!!!!
 app.post('/SubmitToExperiment:experimentId', function(req, res){
+  console.log("Experimenter name: " + req.body.name);
+ var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+         res.writeHead(301,
+            {Location: '/experiment:'+id}
+          );
+          res.end();
+});
+
+
+//Running Experiment!!!!!
+app.get('/experiment:experimentId', function(req, res){
   
   var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
-  console.log("Experimenter name: " + req.body.name);
+  
     funct.getRunningExperiment(id)
     .then(function (itemsList) {
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
          console.log (itemsList);
+
+         // res.writeHead(301,
+         //    {Location: '/experiment:'+itemsList}
+         //  );
+         // res.json({ detail: itemsList })
+         //  res.end();
+
           res.render('experiment', {layout: false, details: itemsList});
         done(null, itemsList);
       }
