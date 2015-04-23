@@ -21,7 +21,7 @@ function goSimulations() {
 		<link rel="stylesheet" href="includes/styleExperiments.css">
 
 		<section id="main"> 
-
+{{#items}}
 			<section id="toolBar">
 				<article id="view"> = </article>
 				<article id="new"> + </article> 
@@ -32,7 +32,7 @@ function goSimulations() {
 					<ul>
 						<li><a href="/">Home</a><span class="divider">></span></li>
 						<li><a href="/Experiments">Experiments</a><span class="divider">></span></li>
-						<li>Modify Experiment</li>
+						<li>Modify {{experiment_name}}</li>
 
 					</ul>
 				</div>
@@ -43,7 +43,7 @@ function goSimulations() {
 			<section id="formArea"> 
 				<article id="detailTab" onclick=goForm()>  Details </article>
 				<article id="simTab" onclick=goSimulations()>  Simulations </article>
-				{{#each items}}
+				
 				<script type="text/javascript">
 				$(document).ready(function() {
 					if("{{show_prices}}" === "on")
@@ -65,11 +65,13 @@ function goSimulations() {
 					{
 						document.getElementById("PrivateOnOffSwitch").checked = true;
 					}
+
+					document.getElementById("Categories").value = "{{category_id}}";
 				});
 				</script>
 				<form action="/SubmitExperiment" method="post">
 					<fieldset>
-						<legend>Testy Test</legend>
+						<legend>{{experiment_name}}</legend>
 						<section id="leftSideF">
 
 							Experiment Name :<br>
@@ -82,10 +84,10 @@ function goSimulations() {
 
 
 							Max Tries : &nbsp  
-<input class="numStyle" type="number" name="points"  min="0" max="10" step="1" value="{{max_tries}}">
+							<input class="numStyle" type="number" name="points"  min="0" max="10" step="1" value="{{max_tries}}">
 
- &nbsp &nbsp &nbsp  Wallet : &nbsp  
-<input class="numStyle" type="number" name="wallet" min="0" value="{{starting_wallet}}"><br>
+							&nbsp &nbsp &nbsp  Wallet : &nbsp  
+							<input class="numStyle" type="number" name="wallet" min="0" value="{{starting_wallet}}"><br>
 
 							<input class="shareStyle" type="share" value="Share Link">
 
@@ -95,9 +97,9 @@ function goSimulations() {
 
 							The SurveyGizmo Code :<br>
 							<input class="inpStyle" type="text" name="survaypage" value="{{gizmo_code}}" ><br><br>
-
+							{{/items}} 
 							Associate with a Category : <br>
-							<select class="inpStyle" name="Categories">
+							<select class="inpStyle" name="Categories" id="Categories">
 								{{#each categories}}
 								<option value="{{category_id}}">{{category_name}}</option>
 								{{/each}} 
@@ -142,6 +144,7 @@ function goSimulations() {
 
 							<input class="canStyle" type="cancel" value="Cancel"> <br>
 							<input class="subStyle" type="submit" value="Submit">
+
 						</section>
 
 						<section id="FlipSide">
@@ -156,13 +159,13 @@ function goSimulations() {
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td class="lalign">1</td>
-										<td>Data Cell</td>
-										<td>Data Cell</td>
-										<td>Data Cell</td>
-										<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
-											<label for="cb1"> </label><br></td>
+										<!-- <tr>
+											<td class="lalign">1</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
+												<label for="cb1"> </label><br></td>
 										</tr>
 										<tr>
 											<td class="lalign">2</td>
@@ -172,40 +175,51 @@ function goSimulations() {
 											<td><input class="dotBox" type="checkbox" id="cb2" name="cb" value="">
 												<label for="cb2"> </label></td>
 											</tr>
+										<tr>
+											<td class="lalign">3</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb3" name="cb" value="">
+												<label for="cb3"> </label></td>
+										</tr>
+										<tr>
+											<td class="lalign">4</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb4" name="cb" value="">
+												<label for="cb4"> </label></td>
+										</tr>
+										<tr>
+											<td class="lalign">5</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb5" name="cb" value="">
+												<label for="cb5"> </label></td>
+										</tr>
+										<tr>
+											<td class="lalign">6</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td>Data Cell</td>
+											<td><input class="dotBox" type="checkbox" id="cb6" name="cb" value="">
+												<label for="cb6"> </label></td>
+										</tr> -->
+
+										{{#each iterations}}
 											<tr>
-												<td class="lalign">3</td>
+												<td class="lalign">1</td>
 												<td>Data Cell</td>
 												<td>Data Cell</td>
 												<td>Data Cell</td>
-												<td><input class="dotBox" type="checkbox" id="cb3" name="cb" value="">
-													<label for="cb3"> </label></td>
-												</tr>
-												<tr>
-													<td class="lalign">4</td>
-													<td>Data Cell</td>
-													<td>Data Cell</td>
-													<td>Data Cell</td>
-													<td><input class="dotBox" type="checkbox" id="cb4" name="cb" value="">
-														<label for="cb4"> </label></td>
-													</tr>
-													<tr>
-														<td class="lalign">5</td>
-														<td>Data Cell</td>
-														<td>Data Cell</td>
-														<td>Data Cell</td>
-														<td><input class="dotBox" type="checkbox" id="cb5" name="cb" value="">
-															<label for="cb5"> </label></td>
-														</tr>
-														<tr>
-															<td class="lalign">6</td>
-															<td>Data Cell</td>
-															<td>Data Cell</td>
-															<td>Data Cell</td>
-															<td><input class="dotBox" type="checkbox" id="cb6" name="cb" value="">
-																<label for="cb6"> </label></td>
-															</tr>
-														</tbody>
-													</table> <br>
+												<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
+													<label for="cb1"> </label><br></td>
+											</tr>
+										{{/each}}
+								</tbody>
+							</table> <br>
 
 													<input class="exportStyle" type="export" value="Export Data">
 
@@ -214,7 +228,7 @@ function goSimulations() {
 											</fieldset>
 										</form>
 
-										{{/each}} 
+
 
 									</section>
 

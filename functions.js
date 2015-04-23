@@ -92,7 +92,7 @@ exports.localAuth = function (usernameNew, passwordNew) {
 //VALUES ('1', '1', 'hello', 'something', '12/04/15', '15/04/15', 'link.com', '1', '0', '0', '0', '1');
 exports.newExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet) {
   console.log("==== Adding new experiment ====");
-  console.log(name + " " + description + " " + privateExp + " " + embbedCode + " " + category + " " + showPrices  + " " + tries);
+  console.log(name + " " + description + " " + privateExp + " " + category + " " + showPrices  + " " + tries  + " " +  openNegotiation + " " + useMinPrice + " " + wallet);
 
   if (!privateExp) {
     privateExp = 'off';
@@ -278,7 +278,7 @@ exports.getCategory = function (wanted) {
     }
 
     if (err == null) {
-         console.log(rows[0].experiment_name);
+       
          deferred.resolve(rows);
        }  
        connection.end();
@@ -310,6 +310,28 @@ exports.getProducts = function (category_id) {
 
   return deferred.promise;
 }
+
+exports.getProduct = function (wanted) {
+  var deferred = Q.defer();
+  console.log("Product_id: " + wanted)
+   pool.getConnection(function (err, connection) {
+   var sql = 'SELECT * FROM flexiprice.products where product_id=?;'
+     connection.query(sql, wanted , function (err, rows) {
+    if (err!= null) {
+      console.log("Error finding product" + err);
+    }
+
+    if (err == null) {
+         deferred.resolve(rows);
+       }  
+       connection.end();
+    
+    });
+   });
+
+  return deferred.promise;
+}
+
 
 //INSERT INTO `flexiprice`.`products` (`category_id`, `description`, `type`, `name`, `value`) 
 //VALUES ('2', 'something', 'url', 'Product1', '20');
@@ -400,6 +422,28 @@ exports.getRunningExperiment = function (experiment_id) {
      connection.query(sql, experiment_id , function (err, rows) {
     if (err!= null) {
       console.log("Error finding running experiment" + err);
+      deferred.reject(new Error(err.body));
+    }
+
+    if (err == null) {
+         deferred.resolve(rows);
+       }  
+       connection.end();
+    
+    });
+   });
+
+  return deferred.promise;
+}
+
+exports.getIterations = function (experiment_id) {
+  var deferred = Q.defer();
+ 
+   pool.getConnection(function (err, connection) {
+   var sql = 'SELECT * FROM flexiprice.iterations where experiment_id=?;'
+     connection.query(sql, category_id , function (err, rows) {
+    if (err!= null) {
+      console.log("Error finding iterations" + err);
       deferred.reject(new Error(err.body));
     }
 
