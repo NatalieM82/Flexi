@@ -19,9 +19,7 @@ var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
 var S3_BUCKET = process.env.S3_BUCKET;
 
-// var AWS_ACCESS_KEY = "AKIAIKRAEFETM7KBHN5A";
-// var AWS_SECRET_KEY = "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";
-// var S3_BUCKET = "flexiprice";
+
 
 
 
