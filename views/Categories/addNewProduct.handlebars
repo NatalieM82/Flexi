@@ -41,7 +41,7 @@ function none(){
        </div>
    </section>
 	<section id="formArea">  {{#each category}}
-		<form action="/SubmitProduct:{{category_id}}" method="post">{{/each}} 
+		<form action="/SubmitProduct:{{category_id}}" method="post" onsubmit="myButton.disabled = true; return true;">{{/each}} 
 			<fieldset>
 				<legend>Add a New Product</legend>
 				<section id="leftSideF">
@@ -75,8 +75,8 @@ function none(){
 						<input type="radio" name="productType" value="None" onclick="none()"> None (You can change this later)<br><br><br><br>
 					</article><br><br><br><br><br><br>
 
-					<input class="addStyle" type="submit" value="Add a Product"> <br>
-					<input class="subStyle" type="submit" value="Submit">
+					<input class="addStyle" type="submit" value="Add a Product" disabled="disabled"> <br>
+					<input class="subStyle" type="submit" value="Submit" name="myButton" id="submitBTN" disabled="disabled">
 
 				</section>
 
@@ -86,38 +86,10 @@ function none(){
 	</section>
 
 </section>
-<!-- 
-<script type="text/javascript">
-function s3_upload(){
-  
-    var url_elem = document.getElementById("file_url");
- 
-    var s3upload = new S3Upload({
-        file_dom_selector: 'fileUpload',
-        s3_sign_put_url: '/sign_s3',
-       onProgress: function(percent, message) {
-            console.log(percent + '% ' + message);
-        },
-        onFinishS3Put: function(public_url) {        
-            url_elem.value = public_url;
-        },
-        onError: function(status) {
-            //status_elem.innerHTML = 'Upload error: ' + status;
-            console.log(status);
-        }
-    });
-}
-/*
-* Listen for file selection:
-*/
-(function() {
-    var input_element = document.getElementById("fileUpload");
-    input_element.onchange = s3_upload;
-})();
-</script>
- -->
+
 
 <script type="text/javascript">
+
 (function() {
     document.getElementById("fileUpload").onchange = function(){
         var files = document.getElementById("fileUpload").files;
@@ -140,9 +112,10 @@ function get_signed_request(file){
             if(xhr.status === 200){
                 var response = JSON.parse(xhr.responseText);
                 upload_file(file, response.signed_request, response.url);
+                
             }
             else{
-                alert("Could not get signed URL.");
+                alert("Could not get signed URL." + file.name);
             }
         }
     };
@@ -155,8 +128,8 @@ function upload_file(file, signed_request, url){
     xhr.setRequestHeader('x-amz-acl', 'public-read');
     xhr.onload = function() {
         if (xhr.status === 200) {
-            document.getElementById("preview").src = url;
             document.getElementById("file_url").value = url;
+            document.getElementById('submitBTN').disabled = false;
         }
     };
     xhr.onerror = function() {
