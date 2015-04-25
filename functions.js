@@ -341,7 +341,7 @@ exports.newProduct = function (name, description, value, min_price, url, file_ur
   console.log(name + " " + description + " " + value + " " + min_price + " " + category_id);
 
  var final_url;
-  if (url == null && file_url !=null)
+  if (url == null && file_url != "")
   {
     final_url = file_url;
   }
