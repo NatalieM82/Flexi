@@ -38,7 +38,10 @@
 			        <td>{{last_modified}}</td>
 			        <td>{{experiment_desc}}</td>
 			        <td>{{active}}</td>
-			        <td><a class="cbp-vm-icon cbp-vm-add" href="/ModifyExperiment:{{experiment_id}}">Edit</a></td>
+			        <td>
+			        	<a class="cbp-vm-icon cbp-vm-add" href="/ModifyExperiment:{{experiment_id}}">Edit</a>
+			        	<a class="cbp-vm-icon cbp-vm-add" href="/DeleteExperiment:{{experiment_id}}">Del</a>
+			        </td>
 			      </tr>
 		      {{/each}} 
 		    </tbody>

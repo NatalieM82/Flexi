@@ -8,6 +8,12 @@ html {height: 100%; }
 body { height: 100%;
 		  background: linear-gradient(180deg, #1c1822,  #171519); }
 
+		  .disabled
+{
+    background-color: #DDD;
+    color: #999;
+}
+
 #wrapper 	{position: relative;
 				height: 100%;
 				 width: 100%;
@@ -151,7 +157,7 @@ body { height: 100%;
 												display: inline-block;}
 												
 												.lnkPlace {position: relative;
-																  top: -59px;
+																  top: -180px;
 															      left: 0%;
 																  height: 60px;
 																  width: 200px;
@@ -166,6 +172,7 @@ body { height: 100%;
 																  width: 160px;
 																  //border: 1px solid white;
 																  display:inline-block;}
+
 																  
 												.nonPlace {position: relative;
 																  top: 0px;
@@ -194,7 +201,20 @@ body { height: 100%;
 																resize: none;
 																font-size: 150%;
 																width: 140px;
-																height: 50px;}
+																height: 50px;
+																color:#ffffff}
+
+												.subStyleDis { position: relative;
+																left: 60%;
+																bottom: 2%;
+																background-color:  #77727d;
+																border: 1px outset  #77727d;
+																border-radius: 3px;
+																resize: none;
+																font-size: 150%;
+																width: 140px;
+																height: 50px;
+																color:#bfbcc2;}
 																
 												.addStyle { position: relative;
 																left: 60%;
@@ -239,3 +259,8 @@ body { height: 100%;
 									  color: white;
 						  			  font-size: 28px;							  
 									  //border: 1px solid white; }
+
+									  #preview {
+									  	width:128px;
+									  	height: 128px;
+									  }

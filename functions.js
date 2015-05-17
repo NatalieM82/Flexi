@@ -2,7 +2,7 @@
 var Q = require('q');
 var mysql      = require('mysql');
 var pool = mysql.createPool({
-  host     : 'flexiprice.ch60q2dhrwiy.us-west-2.rds.amazonaws.com',
+  host     : 'workflow.cmdci40vhwqs.eu-central-1.rds.amazonaws.com',
   user     : 'flexiprice',
   password : 'flexi2015',
   database : 'flexiprice',
@@ -58,10 +58,10 @@ exports.localAuth = function (usernameNew, passwordNew) {
   var user;
 
   pool.getConnection(function (err, connection) {
-   connection.query('SELECT * FROM flexiprice.researchers where username = \"' + usernameNew + '\";' ,function(err, rows, fields) {
+    connection.query('SELECT * FROM flexiprice.researchers where username = \"' + usernameNew + '\";' ,function(err, rows, fields) {
     if (err!= null) {
       console.log("Error finding user" + err);
-       deferred.reject(new Error(err.body));
+       deferred.resolve(false);
     }
 
     if (err == null) {
@@ -75,16 +75,20 @@ exports.localAuth = function (usernameNew, passwordNew) {
            "avatar": rows[i].avatar
          }
          deferred.resolve(user);
-       } else {
-        console.log("PASSWORDS NOT MATCH");
-      
-        deferred.resolve(false);
+        } else {
+          console.log("PASSWORDS NOT MATCH");
+          deferred.resolve(false);
+        }
       }
+      if (rows.length == 0) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
     }
-  }
+
+    }
       connection.end();
-});
- });
+    });
+  });
   return deferred.promise;
 }
 
@@ -135,6 +139,87 @@ exports.newExperiment = function (name, description, privateExp, embbedCode, cat
 
   pool.getConnection(function (err, connection){
     connection.query('INSERT INTO flexiprice.experiments SET ?', post, function (err, result) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+
+      }
+          connection.end();
+    });
+  });
+
+}
+
+//UPDATE `flexiprice`.`experiments` SET `user_id`='2', `category_id`='2', `experiment_name`='Real experiment1', `experiment_desc`='This experiment has a real embed code!', 
+//`creation_date`='16/04/20151', `last_modified`='16/04/20151', `gizmo_code`=' gizmo code ', 
+//`show_prices`='off', `open_negotiation`='on', `use_min_price`='on', `active`='0', `max_tries`='3' WHERE `experiment_id`='12';
+exports.updateExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet, exp_id) {
+  console.log("==== Editin  experiment "+exp_id+ "====");
+  console.log(name + " " + description + " " + privateExp + " " + category + " " + showPrices  + " " + tries  + " " +  openNegotiation + " " + useMinPrice + " " + wallet);
+
+  if (!privateExp) {
+    privateExp = 'off';
+  }
+
+  if (!showPrices) {
+    showPrices = 'off';
+  }
+
+  if (!openNegotiation) {
+    openNegotiation = 'off';
+  }
+
+  if (!useMinPrice) {
+    useMinPrice = 'off';
+  }
+
+  if(!tries) {
+    tries = 0;
+  }
+
+  var today = getTodayDate();
+
+  var post = {
+    user_id: user_idNew,
+    category_id: category,
+    experiment_name: name,
+    experiment_desc : description,
+    creation_date: today,
+    last_modified: today,
+    gizmo_code: embbedCode,
+    show_prices: showPrices,
+    open_negotiation: openNegotiation,
+    use_min_price: useMinPrice,
+    private: privateExp,
+    active: '1',
+    max_tries: tries,
+    starting_wallet: wallet
+  }
+
+ // var sql = 'UPDATE flexiprice.experiments SET user_id=2, category_id=2, experiment_name=Real experiment1, experiment_desc=This experiment has a real embed code!, creation_date=16/04/20151, last_modified=16/04/20151, gizmo_code=embbedCode, show_prices=off, open_negotiation=on, use_min_price=on, active=0, max_tries=3 WHERE experiment_id=12;'
+//      connection.query(sql, user_id , function (err, rows) {
+
+  pool.getConnection(function (err, connection){
+    connection.query('UPDATE flexiprice.experiments SET ?  WHERE experiment_id = ?', [post, exp_id], function (err, result) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+
+      }
+          connection.end();
+    });
+  });
+
+}
+
+//DELETE FROM `flexiprice`.`experiments` WHERE `experiment_id`='20';
+exports.deleteExperiment = function (exp_id) {
+  console.log("==== Deleting experiment "+exp_id+ "====");
+
+  pool.getConnection(function (err, connection){
+    connection.query('DELETE FROM flexiprice.experiments WHERE experiment_id = ?', exp_id, function (err, result) {
       if (err != null) {
         console.log(err);
       }
@@ -335,7 +420,6 @@ exports.getProduct = function (wanted) {
 
 //INSERT INTO `flexiprice`.`products` (`category_id`, `description`, `type`, `name`, `value`) 
 //VALUES ('2', 'something', 'url', 'Product1', '20');
-//req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id
 exports.newProduct = function (name, description, value, min_price, url, file_url, type, category_id) {
   console.log("==== Adding new Product ====");
   console.log(name + " " + description + " " + value + " " + min_price + " " + category_id);
@@ -373,21 +457,94 @@ exports.newProduct = function (name, description, value, min_price, url, file_ur
       }
       if (err == null) {                           
         exports.updateCategory(category_id);
-          console.log(result.insertId);
+          console.log(result.insertId);      
+      }
+          connection.end();
+    });
+  });
 
-          var post2 = {
-           path:final_url, 
-           product_id:result.insertId
+}
+
+//UPDATE `flexiprice`.`products` SET `category_id`='2', `description`='PHP dynamic insert - mysql. Is there a better !', `type`='url', `name`='codereview !', `value`='52', `min_price`='43' WHERE `product_id`='16';
+exports.updateProduct = function (name, description, value, min_price, url, file_url, type, product_id) {
+  console.log("==== Adding new Product ====");
+  console.log(name + " " + description + " " + value + " " + min_price + " " + product_id);
+
+ var final_url;
+  if (url == null && file_url != "")
+  {
+    final_url = file_url;
+  }
+
+
+  if (url != null && file_url == "")
+  {
+    final_url = url;
+  }
+    console.log("Link: " +url+" File: " + file_url + " Final:" +final_url);
+
+  var post = {
+    name: name,
+    description : description,
+    value: value,
+    type: type,
+    path:final_url, 
+    min_price: min_price
+  }
+
+  pool.getConnection(function (err, connection){
+    connection.query('UPDATE flexiprice.products SET ? WHERE product_id = ?', [post, product_id], function (err, result) {
+      if (err != null) {
+        console.log(err);
+
+      }
+      if (err == null) {                           
+        //exports.updateCategory(category_id);
+          console.log(result.insertId);      
+      }
+          connection.end();
+    });
+  });
+
+}
+
+//DELETE FROM `flexiprice`.`products` WHERE `product_id`='43';
+exports.deleteProduct = function (pro_id, cat_id) {
+  console.log("==== Deleting product "+pro_id+ "====");
+  pool.getConnection(function (err, connection){
+    connection.query('DELETE FROM flexiprice.products WHERE product_id = ?', pro_id, function (err, result) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+          exports.deleteFromCategory(cat_id);
+      }
+          connection.end();
+    });
+  });
+
+}
+
+//DELETE FROM `flexiprice`.`categories` WHERE `product_id`='43';
+exports.deleteCategory = function (cat_id) {
+  console.log("==== Deleting category "+cat_id+ "====");
+  pool.getConnection(function (err, connection){
+    connection.query('DELETE FROM flexiprice.categories WHERE category_id = ?', cat_id, function (err, result) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {  
+
+        connection.query('DELETE FROM flexiprice.products WHERE category_id = ?', cat_id, function (err, result) {
+          if (err != null) {
+            console.log(err);
           }
-        
-        // connection.query('INSERT INTO flexiprice.files SET ?', post2, function (err, result) {
-        //   if (err != null) {
-        //     console.log(err);
-        //   }
-        //   if (err == null) {                           
-        //   }
+          if (err == null) {             
+              
+          }
              
-        // });
+        });                     
+          
       }
           connection.end();
     });
@@ -399,6 +556,23 @@ exports.updateCategory = function (wanted) {
   console.log("==== Updating category ====");
   pool.getConnection(function (err, connection){
       var sql = 'UPDATE flexiprice.categories SET products_number=products_number+1 WHERE category_id=?;'
+     connection.query(sql, wanted , function (err, rows) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+
+      }
+          connection.end();
+    });
+  });
+
+}
+
+exports.deleteFromCategory = function (wanted) {
+  console.log("==== Updating category ====");
+  pool.getConnection(function (err, connection){
+      var sql = 'UPDATE flexiprice.categories SET products_number=products_number-1 WHERE category_id=?;'
      connection.query(sql, wanted , function (err, rows) {
       if (err != null) {
         console.log(err);

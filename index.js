@@ -14,14 +14,11 @@ var express = require('express'),
     aws = require('aws-sdk');
 
 var path = require('path');
+var fs = require('fs');
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
 var S3_BUCKET = process.env.S3_BUCKET;
-
-
-
-
 
 //We will be creating these two files shortly
  var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
@@ -29,6 +26,7 @@ var S3_BUCKET = process.env.S3_BUCKET;
 var app = express();
 app.use('/includes',express.static(path.join(__dirname, 'includes')));
 app.use('/images',express.static(path.join(__dirname, 'images')));
+app.use(express.static(__dirname + 'public'));
 //===============PASSPORT===============
 
 // Passport session setup.
@@ -115,15 +113,47 @@ app.use(function(req, res, next){
   next();
 });
 
+// Handlebars.helper('highlight', function(value, options) {
+//   var escaped = Handlebars.Utils.escapeExpression(value);
+//   return new Ember.Handlebars.SafeString('<span class="highlight">' + escaped + '</span>');
+// });
+
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
     defaultLayout: 'main', 
+    helpers: {
+        highlight: function(value) {
+          console.log(value);
+          
+          return JSON.parse(value);
+        }
+        
+    }
 });
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 
 //===============ROUTES=================
+
+// //Default route
+// app.all('*', function(req,res, next) {
+//   console.log("Running first!");
+//   console.log(req.user);
+//   if(req.user == "undefined") {
+//      res.writeHead(200,
+//       {Location: '/signin'}
+//     );
+//   }
+// });
+
+// //Default route
+// app.all('*', function(req,res, next) {
+//   console.log("Running first!");
+//   console.log(req.user);
+//   next();
+// });
+
 //displays our homepage
 app.get('/', function(req, res){
   res.render('home', {user: req.user});
@@ -137,7 +167,7 @@ app.get('/signin', function(req, res){
 //sends the request through our local signup strategy, and if successful takes user to homepage, otherwise returns then to signin page
 app.post('/local-reg', passport.authenticate('local-signup', {
   successRedirect: '/',
-  failureRedirect: '/signin'
+  failureRedirect: '/local-reg'
   })
 );
 
@@ -221,7 +251,7 @@ app.post('/SubmitExperiment' , function(req, res){
 //Modify experiment : needs experiment details, categories, experiment iterations
 app.get('/ModifyExperiment:id' , function(req, res){
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
-  console.log("experiment_id: " + id)
+  console.log("experiment_id: " + id);
   funct.getExperiment(id)
     .then(function (itemsList) {
       if (itemsList) {
@@ -256,6 +286,33 @@ app.get('/ModifyExperiment:id' , function(req, res){
     });
 });
 
+//Submit new experiment
+app.post('/SubmitModifiedExperiment:experiment_id' , function(req, res){
+  console.log(req.user.user_id);
+  var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id);
+  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
+  funct.updateExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet, id);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/Experiments'}
+  );
+  res.end();
+});
+
+//Delete experiment
+app.get('/DeleteExperiment:experiment_id' , function(req, res){
+  console.log(req.user.user_id);
+  var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id);
+  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
+  funct.deleteExperiment(id);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/Experiments'}
+  );
+  res.end();
+});
 
 // === Categories related routes ===
 //Categories page
@@ -351,6 +408,20 @@ app.get('/ShowCategory:id' , function(req, res){
     });
 });
 
+//Delete Categort
+app.get('/DeleteCategory:category_id' , function(req, res){
+  console.log(req.user.user_id);
+  var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
+  console.log("category_id: " + cat_id);
+  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
+  funct.deleteCategory(cat_id);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/Categories'}
+  );
+  res.end();
+});
+
 //Add new product page
 app.get('/addNewProduct:id', function(req, res){
   console.log("User id: " + req.user.user_id);
@@ -376,11 +447,11 @@ app.get('/addNewProduct:id', function(req, res){
     });
 });
 
-//Submit new category
+//Submit new product
 app.post('/SubmitProduct:id' , function(req, res){
   console.log(req.user.user_id);
    var id = (req.params.id).replace(/[^0-9]/g, ''); ;
-  console.log("category_id: " + id);
+  console.log("product_id: " + id);
 
   console.log(req.user.user_id);
   funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
@@ -391,7 +462,37 @@ app.post('/SubmitProduct:id' , function(req, res){
   res.end();
 });
 
-//Modify category - need Category details + products related to category
+//Update product
+app.post('/ModifyProduct:product_id/:category_id' , function(req, res){
+  console.log(req.user.user_id);
+  var id = (req.params.product_id).replace(/[^0-9]/g, ''); 
+  var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
+  console.log("product_id: " + id);
+
+  funct.updateProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/ShowCategory:' + cat_id}
+  );
+  res.end();
+});
+
+//Delete product
+app.get('/DeleteProduct:product_id/:category_id' , function(req, res){
+  console.log(req.user.user_id);
+  var id = (req.params.product_id).replace(/[^0-9]/g, '');
+  var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
+  console.log("product_id: " + id);
+  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
+  funct.deleteProduct(id, cat_id);
+  //res.render('Experiments/experiments', {user: req.user});
+  res.writeHead(301,
+    {Location: '/ShowCategory:' + cat_id}
+  );
+  res.end();
+});
+
+//Modify product - need Category details + products related to category
 app.get('/ShowProduct:product_id' , function(req, res){
   var product_id = (req.params.product_id).replace(/[^0-9]/g, ''); 
   console.log("product_id: " + product_id)
@@ -488,15 +589,19 @@ app.get('/experiment:experimentId', function(req, res){
     .then(function (itemsList) {
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
-         console.log (itemsList);
+         //console.log (itemsList);
+          var path = "public/experiment"+id+".js";
+          var path2 = "/experiment"+id+".js";
 
-         // res.writeHead(301,
-         //    {Location: '/experiment:'+itemsList}
-         //  );
-         // res.json({ detail: itemsList })
-         //  res.end();
+          fs.writeFile(path, itemsList[0].gizmo_code, function(err) {
+              console.log("Writing file");
+              if(err) {
+                  return console.log(err);
+              }
+              console.log("The file was saved!");
+          }); 
 
-          res.render('experiment', {layout: false, details: itemsList});
+        res.render('experiment', {layout: false, details: itemsList, gizmoCodeL: path2});
         done(null, itemsList);
       }
       if (!itemsList) {
@@ -509,6 +614,53 @@ app.get('/experiment:experimentId', function(req, res){
     });
 });
 
+//Running Experiment!!!!!
+// app.get('/experiment:experimentId', function(req, res){
+  
+//   var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+//   console.log("experiment_id: " + id);
+  
+//     funct.getRunningExperiment(id)
+//     .then(function (itemsList) {
+//       if (itemsList) {
+//          console.log("Items length:" + itemsList.length);
+//          //console.log (itemsList);
+//         // var body;
+//         fs.readFile('/experiment_start.handlebars', function (err, data) {
+//           if (err) throw err;
+//           console.log(data);
+//           body = data;
+//           body += itemsList[0].gizmo_code;
+
+//           fs.readFile('/experiment_start.handlebars', function (err, data1) {
+//             if (err) throw err;
+//             console.log(data1);
+//             body += data1;
+
+//             res.render(body, {layout: false, details: itemsList});
+//             done(null, itemsList);
+//           });
+
+//         });
+
+//         // // var body = fs.readFileSync('/experiment_start.handlebars', 'utf8');
+//         // // body += itemsList[0].gizmo_code;
+//         // // body += fs.readFileSync('/experiment_end.handlebars', 'utf8');
+
+//         // console.log(body);
+
+//         // res.render('experiment', {layout: false, details: itemsList});
+//         // done(null, itemsList);
+//       }
+//       if (!itemsList) {
+//         console.log("COULD NOT FIND");
+//         done(null, itemsList);
+//       }
+//     })
+//     .fail(function (err){
+//       console.log("**** Error: " + err.body);
+//     });
+// });
 
 
 //===============PORT=================

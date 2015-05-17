@@ -6,7 +6,9 @@
 function website() {
 	document.getElementById('weburl').disabled = false;
 	document.getElementById('fileUpload').disabled = true; 
-	document.getElementById('fileUpload').value = null;}
+	document.getElementById('fileUpload').value = null;
+	document.getElementById('submitBTN').disabled = false;
+	document.getElementById("submitBTN").className = "subStyle";}
 	
 function fileup() {
 	document.getElementById('weburl').disabled = true;
@@ -18,7 +20,8 @@ function none(){
 	document.getElementById('weburl').disabled = true;
 	document.getElementById('weburl').value = ""; 
 	document.getElementById('fileUpload').disabled = true;
-	document.getElementById('fileUpload').value = null;}
+	document.getElementById('fileUpload').value = null;
+	document.getElementById('submitBTN').disabled = false;}
 </script>
 
 <section id="main"> 
@@ -75,8 +78,8 @@ function none(){
 						<input type="radio" name="productType" value="None" onclick="none()"> None (You can change this later)<br><br><br><br>
 					</article><br><br><br><br><br><br>
 
-					<input class="addStyle" type="submit" value="Add a Product" disabled="disabled"> <br>
-					<input class="subStyle" type="submit" value="Submit" name="myButton" id="submitBTN" disabled="disabled">
+					
+					<input class="subStyleDis" type="submit" value="Submit" name="myButton" id="submitBTN" disabled="disabled">
 
 				</section>
 
@@ -130,6 +133,7 @@ function upload_file(file, signed_request, url){
         if (xhr.status === 200) {
             document.getElementById("file_url").value = url;
             document.getElementById('submitBTN').disabled = false;
+            document.getElementById("submitBTN").className = "subStyle";
         }
     };
     xhr.onerror = function() {

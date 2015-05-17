@@ -33,7 +33,9 @@
 						<tr>
 							<td class="lalign">{{category_name}}</td>
 							<td>{{products_number}}</td>
-							<td><a class="cbp-vm-icon cbp-vm-add" href="/ShowCategory:{{category_id}}" id="{{category_id}}">Edit</a></td>
+							<td><a class="cbp-vm-icon cbp-vm-add" href="/ShowCategory:{{category_id}}" id="{{category_id}}">Edit</a>
+								<a class="cbp-vm-icon cbp-vm-add" href="/DeleteCategory:{{category_id}}" id="{{category_id}}">Del</a>
+							</td>
 						</tr>
 						{{/each}} 
 					</tbody>
