@@ -17,14 +17,15 @@
    <script src="includes/jquery.tablesorter.js"></script>
    <link rel="stylesheet" href="includes/table.css">
 
-<script type="text/javascript">
- //   window.onload = function()  {
- // script = $.getScript("{{gizmoCodeL}}", function() {
- //                alert("Running " + {{gizmoCodeL}});
- //            });
- //  document.getElementById('gizmoContainer').appendChild(script);
- //  };
-</script>
+<script type='text/javascript'>
+// function addScript()
+// {
+//     var str = "{{gizmoCodeL}}";
+//     var newdiv = document.createElement('section');
+//     newdiv.innerHTML = str;
+//     document.getElementById('gizmoContainer').appendChild(newdiv);
+// }
+ </script>
 
  </head>
 <body>
@@ -51,6 +52,8 @@
                 alert("Running ");
             });
 
+          //{{gizmoCodeL}}
+
           // $.getScript( "{{gizmoCodeL}}" )
           //   .done(function( script, textStatus ) {
           //     console.log( textStatus );
@@ -58,6 +61,17 @@
           //   .fail(function( jqxhr, settings, exception ) {
           //     $( "div.log" ).text( "Triggered ajaxError handler." );
           // });
+
+
+// function htmlDecode(input){
+//   var e = document.createElement('section');
+//   e.innerHTML = input;
+//   eval(input);
+//   document.getElementById('gizmoContainer').appendChild(e);
+//   return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+// }
+
+// console.log(htmlDecode("{{gizmoCodeL}}"));
 
         </script>
 

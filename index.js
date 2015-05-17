@@ -15,6 +15,10 @@ var express = require('express'),
 
 var path = require('path');
 var fs = require('fs');
+// var Entities = require('html-entities').XmlEntities;
+ 
+// entities = new Entities();
+var entities = require("entities");
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
@@ -565,7 +569,7 @@ app.get('/sign_s3', function(req, res){
 app.get('/experimentWelcomePage:id', function(req, res){
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
- res.render('experimentWelcomePage', {layout: false, experimentId:id});
+ res.render('RunningExperiment/experimentWelcomePage', {layout: false, experimentId:id});
 });
 
 //Running Experiment!!!!!
@@ -579,40 +583,6 @@ app.post('/SubmitToExperiment:experimentId', function(req, res){
 });
 
 
-//Running Experiment!!!!!
-app.get('/experiment:experimentId', function(req, res){
-  
-  var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
-  console.log("experiment_id: " + id);
-  
-    funct.getRunningExperiment(id)
-    .then(function (itemsList) {
-      if (itemsList) {
-         console.log("Items length:" + itemsList.length);
-         //console.log (itemsList);
-          var path = "public/experiment"+id+".js";
-          var path2 = "/experiment"+id+".js";
-
-          fs.writeFile(path, itemsList[0].gizmo_code, function(err) {
-              console.log("Writing file");
-              if(err) {
-                  return console.log(err);
-              }
-              console.log("The file was saved!");
-          }); 
-
-        res.render('experiment', {layout: false, details: itemsList, gizmoCodeL: path2});
-        done(null, itemsList);
-      }
-      if (!itemsList) {
-        console.log("COULD NOT FIND");
-        done(null, itemsList);
-      }
-    })
-    .fail(function (err){
-      console.log("**** Error: " + err.body);
-    });
-});
 
 //Running Experiment!!!!!
 // app.get('/experiment:experimentId', function(req, res){
@@ -625,32 +595,19 @@ app.get('/experiment:experimentId', function(req, res){
 //       if (itemsList) {
 //          console.log("Items length:" + itemsList.length);
 //          //console.log (itemsList);
-//         // var body;
-//         fs.readFile('/experiment_start.handlebars', function (err, data) {
-//           if (err) throw err;
-//           console.log(data);
-//           body = data;
-//           body += itemsList[0].gizmo_code;
+//           // var path = "public/experiment"+id+".js";
+//           // var path2 = "/experiment"+id+".js";
 
-//           fs.readFile('/experiment_start.handlebars', function (err, data1) {
-//             if (err) throw err;
-//             console.log(data1);
-//             body += data1;
+//           // fs.writeFile(path, itemsList[0].gizmo_code, function(err) {
+//           //     console.log("Writing file");
+//           //     if(err) {
+//           //         return console.log(err);
+//           //     }
+//           //     console.log("The file was saved!");
+//           // }); 
 
-//             res.render(body, {layout: false, details: itemsList});
-//             done(null, itemsList);
-//           });
-
-//         });
-
-//         // // var body = fs.readFileSync('/experiment_start.handlebars', 'utf8');
-//         // // body += itemsList[0].gizmo_code;
-//         // // body += fs.readFileSync('/experiment_end.handlebars', 'utf8');
-
-//         // console.log(body);
-
-//         // res.render('experiment', {layout: false, details: itemsList});
-//         // done(null, itemsList);
+//         res.render('experiment', {layout: false, details: itemsList, gizmoCodeL: itemsList[0].gizmo_code});
+//         done(null, itemsList);
 //       }
 //       if (!itemsList) {
 //         console.log("COULD NOT FIND");
@@ -661,6 +618,55 @@ app.get('/experiment:experimentId', function(req, res){
 //       console.log("**** Error: " + err.body);
 //     });
 // });
+
+//Running Experiment!!!!!
+app.get('/experiment:experimentId', function(req, res){
+  
+  var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + id);
+  
+    funct.getRunningExperiment(id)
+    .then(function (itemsList) {
+      if (itemsList) {
+         console.log("Items length:" + itemsList.length);
+         //console.log (itemsList);
+        // var body;
+        console.log(process.cwd());
+        fs.readFile(__dirname +'/views/RunningExperiment/experimentstart.handlebars', function (err, data) {
+          if (err) throw err;
+          console.log(data);
+          body = data;
+          body += itemsList[0].gizmo_code;
+
+          fs.readFile(__dirname +'/views/RunningExperiment/experimentend.handlebars', function (err, data1) {
+            if (err) throw err;
+            console.log(data1);
+            body += data1;
+
+            res.send(body, {layout: false, details: itemsList});
+            done(null, itemsList);
+          });
+
+        });
+
+        // // var body = fs.readFileSync('/experiment_start.handlebars', 'utf8');
+        // // body += itemsList[0].gizmo_code;
+        // // body += fs.readFileSync('/experiment_end.handlebars', 'utf8');
+
+        // console.log(body);
+
+        // res.render('experiment', {layout: false, details: itemsList});
+        // done(null, itemsList);
+      }
+      if (!itemsList) {
+        console.log("COULD NOT FIND");
+        done(null, itemsList);
+      }
+    })
+    .fail(function (err){
+      console.log("**** Error: " + err.body);
+    });
+});
 
 
 //===============PORT=================
