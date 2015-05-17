@@ -630,7 +630,7 @@ app.get('/experiment:experimentId', function(req, res){
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
          //console.log (itemsList);
-        // var body;
+         var body;
         console.log(process.cwd());
         fs.readFile(__dirname +'/views/RunningExperiment/experimentstart.handlebars', function (err, data) {
           if (err) throw err;
@@ -644,11 +644,11 @@ app.get('/experiment:experimentId', function(req, res){
             body += data1;
 
             res.send(body, {layout: false, details: itemsList});
-            done(null, itemsList);
+            
           });
-
+          
         });
-
+        done(null, itemsList);
         // // var body = fs.readFileSync('/experiment_start.handlebars', 'utf8');
         // // body += itemsList[0].gizmo_code;
         // // body += fs.readFileSync('/experiment_end.handlebars', 'utf8');
