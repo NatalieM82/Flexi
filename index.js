@@ -631,19 +631,19 @@ app.get('/experiment:experimentId', function(req, res){
          console.log("Items length:" + itemsList.length);
          //console.log (itemsList);
          var body;
-        console.log(process.cwd());
+        //console.log(process.cwd());
         fs.readFile(__dirname +'/views/RunningExperiment/experimentstart.handlebars', function (err, data) {
           if (err) throw err;
-          console.log(data);
+          //console.log(data);
           body = data;
           body += itemsList[0].gizmo_code;
 
           fs.readFile(__dirname +'/views/RunningExperiment/experimentend.handlebars', function (err, data1) {
             if (err) throw err;
-            console.log(data1);
+            //console.log(data1);
             body += data1;
-
-            res.send(body, {layout: false, details: itemsList});
+            res.locals.details = itemsList;
+            res.send(body);
             
           });
           
