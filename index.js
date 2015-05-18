@@ -13,12 +13,10 @@ var express = require('express'),
     FacebookStrategy = require('passport-facebook'),
     aws = require('aws-sdk');
 
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
 var path = require('path');
 var fs = require('fs');
-// var Entities = require('html-entities').XmlEntities;
- 
-// entities = new Entities();
-var entities = require("entities");
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
@@ -30,7 +28,7 @@ var S3_BUCKET = process.env.S3_BUCKET;
 var app = express();
 app.use('/includes',express.static(path.join(__dirname, 'includes')));
 app.use('/images',express.static(path.join(__dirname, 'images')));
-app.use(express.static(__dirname + 'public'));
+app.use(express.static(__dirname + 'views/public'));
 //===============PASSPORT===============
 
 // Passport session setup.
@@ -89,6 +87,18 @@ passport.use('local-signup', new LocalStrategy(
   }
 ));
 
+passport.use(new GoogleStrategy({
+    clientID: "47362818163-6emg0gjbgkfo2kvavt4n7hq1tdtc4t8e.apps.googleusercontent.com",
+    clientSecret: "GFLYTEnPm71R7U0ehbAuPIIF",
+    callbackURL: "http://127.0.0.1:5000/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+
 //===============EXPRESS================
 // Configure Express
 app.use(logger('combined'));
@@ -139,6 +149,16 @@ app.set('view engine', 'handlebars');
 
 
 //===============ROUTES=================
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 // //Default route
 // app.all('*', function(req,res, next) {
@@ -242,9 +262,7 @@ app.get('/NewExperiment', function(req, res){
 //Submit new experiment
 app.post('/SubmitExperiment' , function(req, res){
   console.log(req.user.user_id);
-  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
   funct.newExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet);
-  //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/Experiments'}
   );
@@ -260,8 +278,6 @@ app.get('/ModifyExperiment:id' , function(req, res){
     .then(function (itemsList) {
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
-        // console.log (itemsList);
-        // res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList}); 
         funct.getCategories(req.user.user_id)
         .then(function (categoriesList) {
           if (categoriesList) {
@@ -295,9 +311,7 @@ app.post('/SubmitModifiedExperiment:experiment_id' , function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
-  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
   funct.updateExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet, id);
-  //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/Experiments'}
   );
@@ -309,9 +323,7 @@ app.get('/DeleteExperiment:experiment_id' , function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
-  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
   funct.deleteExperiment(id);
-  //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/Experiments'}
   );
@@ -417,9 +429,7 @@ app.get('/DeleteCategory:category_id' , function(req, res){
   console.log(req.user.user_id);
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
   console.log("category_id: " + cat_id);
-  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
   funct.deleteCategory(cat_id);
-  //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/Categories'}
   );
@@ -457,9 +467,8 @@ app.post('/SubmitProduct:id' , function(req, res){
    var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("product_id: " + id);
 
-  console.log(req.user.user_id);
   funct.newProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
-  //res.render('Experiments/experiments', {user: req.user});
+
   res.writeHead(301,
     {Location: '/ShowCategory:' + id}
   );
@@ -472,9 +481,9 @@ app.post('/ModifyProduct:product_id/:category_id' , function(req, res){
   var id = (req.params.product_id).replace(/[^0-9]/g, ''); 
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
   console.log("product_id: " + id);
-
+ 
   funct.updateProduct(req.body.name, req.body.message, req.body.price, req.body.MinPrice, req.body.webpage, req.body.file_url, req.body.productType, id);
-  //res.render('Experiments/experiments', {user: req.user});
+ 
   res.writeHead(301,
     {Location: '/ShowCategory:' + cat_id}
   );
@@ -487,9 +496,7 @@ app.get('/DeleteProduct:product_id/:category_id' , function(req, res){
   var id = (req.params.product_id).replace(/[^0-9]/g, '');
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
   console.log("product_id: " + id);
-  //name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet
   funct.deleteProduct(id, cat_id);
-  //res.render('Experiments/experiments', {user: req.user});
   res.writeHead(301,
     {Location: '/ShowCategory:' + cat_id}
   );
@@ -522,9 +529,6 @@ app.get('/ShowProduct:product_id' , function(req, res){
               .fail(function (err){
                 console.log("**** Error: " + err.body);
               });
-
-        // res.render('Categories/modifyProduct', {user: req.user, product:productsList});
-         //done(null, productsList);
       }
       if (!productsList) {
          console.log("COULD NOT FIND");
@@ -537,9 +541,7 @@ app.get('/ShowProduct:product_id' , function(req, res){
 
 });
 
-
-
-
+//Amazon S3 bucket - file uploading
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});
     var s3 = new aws.S3();
@@ -631,32 +633,34 @@ app.get('/experiment:experimentId', function(req, res){
          console.log("Items length:" + itemsList.length);
          //console.log (itemsList);
          var body;
-        //console.log(process.cwd());
         fs.readFile(__dirname +'/views/RunningExperiment/experimentstart.handlebars', function (err, data) {
           if (err) throw err;
-          //console.log(data);
           body = data;
           body += itemsList[0].gizmo_code;
 
           fs.readFile(__dirname +'/views/RunningExperiment/experimentend.handlebars', function (err, data1) {
             if (err) throw err;
-            //console.log(data1);
             body += data1;
-            res.locals.details = itemsList;
-            res.send(body);
-            
+            // app.locals({
+            //     details: itemsList
+            // });
+
+            //**res.send(body);
+            //res.render(body, {layout: false, details: itemsList, gizmoCodeL: itemsList[0].gizmo_code});
+            var path = "views/public/experiment"+id+".handlebars";
+            fs.writeFile(path, body, function(err) {
+                console.log("Writing file");
+                if(err) {
+                    return console.log(err);
+                }
+                console.log("The file was saved!");
+                res.render("public/experiment"+id, {layout: false, details: itemsList});
+            });
+
           });
           
         });
         done(null, itemsList);
-        // // var body = fs.readFileSync('/experiment_start.handlebars', 'utf8');
-        // // body += itemsList[0].gizmo_code;
-        // // body += fs.readFileSync('/experiment_end.handlebars', 'utf8');
-
-        // console.log(body);
-
-        // res.render('experiment', {layout: false, details: itemsList});
-        // done(null, itemsList);
       }
       if (!itemsList) {
         console.log("COULD NOT FIND");

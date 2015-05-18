@@ -1,0 +1,129 @@
+<!-- views/layouts/experiment.handlebars -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="User Authentication">
+  <meta name="author" content="">
+
+  <title>Experiment</title>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="includes/runningExperimentStyle.css">
+   <script src="includes/jquery.tablesorter.js"></script>
+   <link rel="stylesheet" href="includes/table.css">
+
+
+ </head>
+<body>
+  <section id="wrapper">
+    <section id="main"> 
+
+      <section id="top">
+        <section id="scoreArea">
+          Your Current Score is: <article id="score"></article> 
+        </section>
+        <section id="walletArea">
+          Your current Wallet: <article id="wallet"></article> 
+        </section>
+      </section>
+      
+       <section id="gizmoContainer">
+          
+
+      
+      <script type="text/javascript" >document.write('<script src="http' + (("https:" == document.location.protocol) ? "s" : "") + '://www.surveygizmo.com/s3/2001719/Testy-Test?__output=embedjs&__ref=' + escape(document.location) + '" type="text/javascript" ></scr' + 'ipt>'); 																	</script> 																	<noscript> 																		This survey is powered by SurveyGizmo's <a href="http://www.surveygizmo.com">online survey software</a>. <a href="http://www.surveygizmo.com/s3/2001719/Testy-Test?jsfallback=true">Please take my survey now</a> 																	</noscript>
+      </section>
+      
+
+      <section id="formArea"> 
+        <form action="action_page.php">
+          <section id="objContainer">
+            You buy an item which might help you solve this question: <br><br>
+            Make an offer : <input class="inpStyle" type="text" name="name">
+            <input class="conStyle" type="submit" value="Confirm"><br><br><br><br>
+            
+            You can choose only one : <br><br>
+
+            <table id="keywords" cellspacing="0" cellpadding="0">
+              <thead>
+                <tr>
+                  <th><span>Name</span></th>
+                  <th><span>Price</span></th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {{#each details}}
+                  <tr>
+                    <td class="lalign"><a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" onclick="myFunction('{{path}}', {{value}})">{{name}}</a></td>
+                    <td>{{value}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </section>  
+        </form>   
+      </section>
+
+    </section>  
+  </section>  
+</body>
+</html>
+
+<script>
+var lastScore;
+          
+        window.onload = function() {
+          if (typeof(Storage) != "undefined") {
+                // Store
+                //localStorage.setItem("wallet", {{details.1.starting_wallet}});
+                // Retrieve
+                if (sessionStorage.getItem("wallet") === null) {
+                    sessionStorage.setItem("wallet", {{details.1.starting_wallet}});
+                }
+               
+
+                document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+            } else {
+                document.getElementById("wallet").innerHTML = "Sorry, your browser does not support Web Storage...";
+            }
+          try {
+            var id = document.getElementsByClassName("sg-type-script")[0].innerText;
+            document.getElementsByClassName("sg-type-script")[0].style.visibility = "hidden";
+            var score = document.getElementsByClassName("sg-question-options")[0].innerText;
+            var numberPattern = /\d+/g;
+            score = score.match(numberPattern);
+            document.getElementById("score").innerHTML += score;
+            
+          } 
+          catch(err) {
+            var score = document.getElementsByClassName("sg-question-options")[0].innerText;
+            document.getElementsByClassName("sg-question-options")[0].style.visibility = "hidden";
+            var numberPattern = /\d+/g;
+            score = score.match(numberPattern);
+            if (score) {
+              lastScore = score;
+            }
+            document.getElementById("score").innerHTML = lastScore;
+          }
+        };
+
+        function myFunction(path, price) {
+    
+          if (confirm("Do you want to make a purchase?") == true) {
+              window.open(path, '_blank');
+              sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - price);
+              document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+              console.log(sessionStorage.getItem("wallet"));
+
+          } else {
+              
+          }
+    
+        }
+</script>
