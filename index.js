@@ -88,8 +88,8 @@ passport.use('local-signup', new LocalStrategy(
 ));
 
 passport.use(new GoogleStrategy({
-    clientID: "47362818163-6emg0gjbgkfo2kvavt4n7hq1tdtc4t8e.apps.googleusercontent.com",
-    clientSecret: "GFLYTEnPm71R7U0ehbAuPIIF",
+    clientID: "47362818163-fkl8bcdq8s8mlqjacprukh5npdqmg30h.apps.googleusercontent.com",
+    clientSecret: "5OXoysvI1eUjCcY-D-qwPu6f",
     callbackURL: "http://127.0.0.1:5000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
