@@ -90,7 +90,7 @@ passport.use('local-signup', new LocalStrategy(
 passport.use(new GoogleStrategy({
     clientID: "47362818163-ih40bkgdk8inev800ctgivrn58hbtu82.apps.googleusercontent.com",
     clientSecret: "eMMBybTbj7ISKoNlld75AYRv",
-    callbackURL: "http://flexiprice.herokuapp.com/auth/google/callback"
+    callbackURL: "/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     User.findOrCreate({ googleId: profile.id }, function (err, user) {
