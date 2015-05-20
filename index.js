@@ -278,9 +278,11 @@ app.get('/reset/:token', function(req, res) {
       req.flash('error', 'Password reset token is invalid or has expired.');
       return res.redirect('/forgot');
     }
+    console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
     res.render('reset', {
       user: req.user
     });
+
   });
 });
 
@@ -294,7 +296,7 @@ app.post('/reset/:token', function(req, res) {
           req.flash('error', 'Password reset token is invalid or has expired.');
           return res.redirect('back');
         }
-
+        console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
         user.password = req.body.password;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
