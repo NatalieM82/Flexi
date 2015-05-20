@@ -13,10 +13,13 @@ var express = require('express'),
     FacebookStrategy = require('passport-facebook'),
     aws = require('aws-sdk');
 
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-
+var flash = require('express-flash');
 var path = require('path');
 var fs = require('fs');
+var async = require('async');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
@@ -33,7 +36,7 @@ app.use(express.static(__dirname + 'views/public'));
 
 // Passport session setup.
 passport.serializeUser(function(user, done) {
-  console.log("serializing " + user.username);
+  console.log("serializing " + user.email);
   done(null, user);
 });
 
@@ -43,14 +46,16 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // Use the LocalStrategy within Passport to login/”signin” users.
-passport.use('local-signin', new LocalStrategy(
-  {passReqToCallback : true}, //allows us to pass back the request to the callback
-  function(req, username, password, done) {
-    funct.localAuth(username, password)
+passport.use('local-signin', new LocalStrategy({     
+        usernameField : 'email',
+        passwordField : 'password',
+        passReqToCallback : true}, //allows us to pass back the request to the callback
+  function(req, email, password, done) {
+    funct.localAuth(email, password)
     .then(function (user) {
       if (user) {
-        console.log("LOGGED IN AS: " + user.username);
-        req.session.success = 'You are successfully logged in ' + user.username + '!';
+        console.log("LOGGED IN AS: " + user.email);
+        req.session.success = 'You are successfully logged in ' + user.email + '!';
         done(null, user);
       }
       if (!user) {
@@ -65,19 +70,21 @@ passport.use('local-signin', new LocalStrategy(
   }
 ));
 // Use the LocalStrategy within Passport to register/"signup" users.
-passport.use('local-signup', new LocalStrategy(
-  {passReqToCallback : true}, //allows us to pass back the request to the callback
-  function(req, username, password, done) {
-    funct.localReg(username, password)
+passport.use('local-signup', new LocalStrategy({
+        usernameField : 'email',
+        passwordField : 'password',
+        passReqToCallback : true}, //allows us to pass back the request to the callback
+  function(req, email, password, done) {
+    funct.localReg(email, password)
     .then(function (user) {
       if (user) {
-        console.log("REGISTERED: " + user.username);
-        req.session.success = 'You are successfully registered and logged in ' + user.username + '!';
+        console.log("REGISTERED: " + user.email);
+        req.session.success = 'You are successfully registered and logged in ' + user.email + '!';
         done(null, user);
       }
       if (!user) {
         console.log("COULD NOT REGISTER");
-        req.session.error = 'That username is already in use, please try a different one.'; //inform user could not log them in
+        req.session.error = 'That email is already in use, please try a different one.'; //inform user could not log them in
         done(null, user);
       }
     })
@@ -87,17 +94,6 @@ passport.use('local-signup', new LocalStrategy(
   }
 ));
 
-passport.use('google', new GoogleStrategy({
-    clientID: "47362818163-ih40bkgdk8inev800ctgivrn58hbtu82.apps.googleusercontent.com",
-    clientSecret: "eMMBybTbj7ISKoNlld75AYRv",
-    callbackURL: "/auth/google/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      return done(err, user);
-    });
-  }
-));
 
 //===============EXPRESS================
 // Configure Express
@@ -107,6 +103,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+
+app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -127,10 +126,6 @@ app.use(function(req, res, next){
   next();
 });
 
-// Handlebars.helper('highlight', function(value, options) {
-//   var escaped = Handlebars.Utils.escapeExpression(value);
-//   return new Ember.Handlebars.SafeString('<span class="highlight">' + escaped + '</span>');
-// });
 
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
@@ -149,34 +144,6 @@ app.set('view engine', 'handlebars');
 
 
 //===============ROUTES=================
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
-
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/signin' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
-
-// //Default route
-// app.all('*', function(req,res, next) {
-//   console.log("Running first!");
-//   console.log(req.user);
-//   if(req.user == "undefined") {
-//      res.writeHead(200,
-//       {Location: '/signin'}
-//     );
-//   }
-// });
-
-// //Default route
-// app.all('*', function(req,res, next) {
-//   console.log("Running first!");
-//   console.log(req.user);
-//   next();
-// });
 
 //displays our homepage
 app.get('/', function(req, res){
@@ -208,16 +175,172 @@ app.get('/local-reg', function(req, res){
 
 //logs user out of site, deleting them from the session, and returns to homepage
 app.get('/logout', function(req, res){
-  var name = req.user.username;
-  console.log("LOGGIN OUT " + req.user.username)
+  var name = req.user.email;
+  console.log("LOGGIN OUT " + req.user.email)
   req.logout();
   res.redirect('/');
   req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
+// route middleware to make sure user is logged in
+function isLoggedIn(req, res, next) {
+
+  // if user is authenticated in the session, carry on
+  if (req.isAuthenticated())
+    return next();
+
+  // if they aren't redirect them to the home page
+  res.redirect('/');
+}
+
+
+//Forgot passwords routes
+app.get('/forgot', function(req, res) {
+  res.render('forgot', {
+    user: req.user
+  });
+});
+
+app.post('/forgot', function(req, res, next) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(20, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      // User.findOne({ email: req.body.email }, function(err, user) {
+        funct.findUser(req.body.email)
+      .then(function (user) {
+        console.log('finding user');
+        if (!user) {
+          req.flash('error', 'No account with that email address exists.');
+          return res.redirect('/forgot');
+        }
+
+        console.log('found user');
+
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = (Date.now() + 3600000); // 1 hour
+       
+        console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+
+        // user.save(function(err) {
+        //   done(err, token, user);
+        // });
+
+        funct.updateUser(user)
+        .then(function (user,err) { 
+          console.log("2. Changed user token");
+          console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+          done(err, user.resetPasswordToken, user);
+        });
+        
+      });
+      
+    },
+    function(token, user, done) {
+      console.log('sending email');
+      var smtpTransport = nodemailer.createTransport('SMTP', {
+        service: 'gmail',
+        auth: {
+            user: 'flexiprice@gmail.com',
+            pass: 'flexi2015'
+        }
+      });
+
+      var mailOptions = {
+        from: 'passwordreset@FlexiPrice.com',
+        to: user.email,
+        subject: 'FlexiPrice Password Reset',
+        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+        done(err, 'done');
+      });
+    }
+  ], function(err) {
+    if (err) return next(err);
+    res.redirect('/forgot');
+  });
+});
+
+app.get('/reset/:token', function(req, res) {
+  //User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    funct.findToken(req.params.token)
+      .then(function (user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/forgot');
+    }
+    res.render('reset', {
+      user: req.user
+    });
+  });
+});
+
+app.post('/reset/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      //User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+      funct.findToken(req.params.token)
+      .then(function (user) {
+        if (!user) {
+          req.flash('error', 'Password reset token is invalid or has expired.');
+          return res.redirect('back');
+        }
+
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        // user.save(function(err) {
+        //   req.logIn(user, function(err) {
+        //     done(err, user);
+        //   });
+        // });
+
+        funct.updateUser(user)
+        .then(function (user,err) { 
+          console.log("3. Changed user token");
+          console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+          done(err, user);
+        });
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport('SMTP', {
+        service: 'gmail',
+        auth: {
+            user: 'flexiprice@gmail.com',
+            pass: 'flexi2015'
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'passwordreset@FlexiPrice.com',
+        subject: 'Your password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('success', 'Success! Your password has been changed.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/');
+  });
+});
+
 // === Experiments related routes ===
 //Experiments page
-app.get('/Experiments', function(req, res){
+app.get('/Experiments', isLoggedIn, function(req, res){
   console.log("User id: " + req.user.user_id);
 
   funct.getExperiments(req.user.user_id)
@@ -240,7 +363,7 @@ app.get('/Experiments', function(req, res){
 });
 
 //Go to -> Add new experiment page
-app.get('/NewExperiment', function(req, res){
+app.get('/NewExperiment', isLoggedIn, function(req, res){
  funct.getCategories(req.user.user_id)
     .then(function (itemsList) {
       if (itemsList) {
@@ -260,7 +383,7 @@ app.get('/NewExperiment', function(req, res){
 });
 
 //Submit new experiment
-app.post('/SubmitExperiment' , function(req, res){
+app.post('/SubmitExperiment' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   funct.newExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet);
   res.writeHead(301,
@@ -271,7 +394,7 @@ app.post('/SubmitExperiment' , function(req, res){
 
 
 //Modify experiment : needs experiment details, categories, experiment iterations
-app.get('/ModifyExperiment:id' , function(req, res){
+app.get('/ModifyExperiment:id' , isLoggedIn, function(req, res){
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
   funct.getExperiment(id)
@@ -307,7 +430,7 @@ app.get('/ModifyExperiment:id' , function(req, res){
 });
 
 //Submit new experiment
-app.post('/SubmitModifiedExperiment:experiment_id' , function(req, res){
+app.post('/SubmitModifiedExperiment:experiment_id' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
@@ -319,7 +442,7 @@ app.post('/SubmitModifiedExperiment:experiment_id' , function(req, res){
 });
 
 //Delete experiment
-app.get('/DeleteExperiment:experiment_id' , function(req, res){
+app.get('/DeleteExperiment:experiment_id' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
@@ -332,7 +455,7 @@ app.get('/DeleteExperiment:experiment_id' , function(req, res){
 
 // === Categories related routes ===
 //Categories page
-app.get('/Categories', function(req, res){
+app.get('/Categories', isLoggedIn, function(req, res){
   console.log("User id: " + req.user.user_id);
 
   funct.getCategories(req.user.user_id)
@@ -355,12 +478,12 @@ app.get('/Categories', function(req, res){
 
 
 //Go to -> Add new category page
-app.get('/NewCategory', function(req, res){
+app.get('/NewCategory', isLoggedIn, function(req, res){
    res.render('Categories/addNewCategory', {user: req.user});
 });
 
 //Submit new category
-app.post('/SubmitCategory' , function(req, res){
+app.post('/SubmitCategory' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   funct.newCategory(req.body.name, req.body.message, req.user.user_id)
       .then(function (item) {
@@ -385,7 +508,7 @@ app.post('/SubmitCategory' , function(req, res){
 });
 
 //Modify category - need Category details + products related to category
-app.get('/ShowCategory:id' , function(req, res){
+app.get('/ShowCategory:id' , isLoggedIn, function(req, res){
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("category_id: " + id)
 
@@ -425,7 +548,7 @@ app.get('/ShowCategory:id' , function(req, res){
 });
 
 //Delete Categort
-app.get('/DeleteCategory:category_id' , function(req, res){
+app.get('/DeleteCategory:category_id', isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
   console.log("category_id: " + cat_id);
@@ -437,7 +560,7 @@ app.get('/DeleteCategory:category_id' , function(req, res){
 });
 
 //Add new product page
-app.get('/addNewProduct:id', function(req, res){
+app.get('/addNewProduct:id', isLoggedIn, function(req, res){
   console.log("User id: " + req.user.user_id);
 
   var id = (req.params.id).replace(/[^0-9]/g, ''); ;
@@ -462,7 +585,7 @@ app.get('/addNewProduct:id', function(req, res){
 });
 
 //Submit new product
-app.post('/SubmitProduct:id' , function(req, res){
+app.post('/SubmitProduct:id' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
    var id = (req.params.id).replace(/[^0-9]/g, ''); ;
   console.log("product_id: " + id);
@@ -476,7 +599,7 @@ app.post('/SubmitProduct:id' , function(req, res){
 });
 
 //Update product
-app.post('/ModifyProduct:product_id/:category_id' , function(req, res){
+app.post('/ModifyProduct:product_id/:category_id' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.product_id).replace(/[^0-9]/g, ''); 
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
@@ -491,7 +614,7 @@ app.post('/ModifyProduct:product_id/:category_id' , function(req, res){
 });
 
 //Delete product
-app.get('/DeleteProduct:product_id/:category_id' , function(req, res){
+app.get('/DeleteProduct:product_id/:category_id' , isLoggedIn, function(req, res){
   console.log(req.user.user_id);
   var id = (req.params.product_id).replace(/[^0-9]/g, '');
   var cat_id = (req.params.category_id).replace(/[^0-9]/g, ''); 
@@ -504,7 +627,7 @@ app.get('/DeleteProduct:product_id/:category_id' , function(req, res){
 });
 
 //Modify product - need Category details + products related to category
-app.get('/ShowProduct:product_id' , function(req, res){
+app.get('/ShowProduct:product_id' , isLoggedIn, function(req, res){
   var product_id = (req.params.product_id).replace(/[^0-9]/g, ''); 
   console.log("product_id: " + product_id)
   funct.getProduct(product_id)
@@ -542,7 +665,7 @@ app.get('/ShowProduct:product_id' , function(req, res){
 });
 
 //Amazon S3 bucket - file uploading
-app.get('/sign_s3', function(req, res){
+app.get('/sign_s3', isLoggedIn, function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});
     var s3 = new aws.S3();
     var s3_params = {

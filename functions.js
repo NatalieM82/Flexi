@@ -10,38 +10,40 @@ var pool = mysql.createPool({
 
 
 //used in local-signup strategy
-exports.localReg = function (usernameNew, passwordNew) {
+exports.localReg = function (emailNew, passwordNew) {
   var deferred = Q.defer();
-  post = { username: usernameNew, password: passwordNew, avatar:"http://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png"};
+  post = { email: emailNew, password: passwordNew, avatar:"http://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png"};
   var user;
 
   pool.getConnection(function (err, connection) {
     connection.query('INSERT INTO flexiprice.researchers SET ?', post, function (err, result) {
       if (err != null) {
         console.log(err);
-        console.log("Username already in use");
+        console.log("Email already in use");
        
         deferred.resolve(false);
       }
       if (err == null) {                           
-        connection.query('SELECT * FROM flexiprice.researchers where username = \"' + usernameNew + '\";' ,function(err, rows, fields) {
+        connection.query('SELECT * FROM flexiprice.researchers where email = \"' + emailNew + '\";' ,function(err, rows, fields) {
           if (err!= null) {
             console.log("Error finding user" + err);
           }
 
           if (err == null) {
             for (var i in rows) {
-              console.log(rows.username +" "+ rows[i].password +" "+ rows[i].user_id);
+              console.log(rows[i].email +" "+ rows[i].password +" "+ rows[i].user_id);
               user = {
-               "username": rows[i].username,
+               "email": rows[i].email,
                "password": rows[i].password,
                "user_id": rows[i].user_id,
-               "avatar": "http://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png"
+               "avatar": rows[i].avatar,
+                "resetPasswordToken": rows[i].resetPasswordToken,
+                "resetPasswordExpires": rows[i].resetPasswordExpires
              }
              deferred.resolve(user);
            }
          }
-             connection.end();
+            
        });
       }
       connection.end();
@@ -52,13 +54,15 @@ exports.localReg = function (usernameNew, passwordNew) {
   return deferred.promise;
 };
 
-exports.localAuth = function (usernameNew, passwordNew) {
+
+
+exports.localAuth = function (emailNew, passwordNew) {
   var deferred = Q.defer();
 
   var user;
 
   pool.getConnection(function (err, connection) {
-    connection.query('SELECT * FROM flexiprice.researchers where username = \"' + usernameNew + '\";' ,function(err, rows, fields) {
+    connection.query('SELECT * FROM flexiprice.researchers where email = \"' + emailNew + '\";' ,function(err, rows, fields) {
     if (err!= null) {
       console.log("Error finding user" + err);
        deferred.resolve(false);
@@ -66,13 +70,15 @@ exports.localAuth = function (usernameNew, passwordNew) {
 
     if (err == null) {
       for (var i in rows) {
-        console.log(rows[i].username +" "+ rows[i].password +" "+ rows[i].user_id);
+        console.log(rows[i].email +" "+ rows[i].password +" "+ rows[i].user_id);
         if (passwordNew == rows[i].password) {
          user = {
-           "username": rows[i].username,
+           "email": rows[i].email,
            "password": rows[i].password,
            "user_id": rows[i].user_id,
-           "avatar": rows[i].avatar
+           "avatar": rows[i].avatar,
+           "resetPasswordToken": rows[i].resetPasswordToken,
+           "resetPasswordExpires": rows[i].resetPasswordExpires
          }
          deferred.resolve(user);
         } else {
@@ -91,6 +97,128 @@ exports.localAuth = function (usernameNew, passwordNew) {
   });
   return deferred.promise;
 }
+
+exports.findUser = function (emailNew) {
+  var deferred = Q.defer();
+
+  var user;
+
+  pool.getConnection(function (err, connection) {
+    connection.query('SELECT * FROM flexiprice.researchers where email = \"' + emailNew + '\";' ,function(err, rows, fields) {
+    if (err!= null) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
+    }
+
+    if (err == null) {
+      for (var i in rows) {
+        console.log(rows[i].email +" "+ rows[i].password +" "+ rows[i].user_id);
+       
+         user = {
+           "email": rows[i].email,
+           "password": rows[i].password,
+           "user_id": rows[i].user_id,
+           "avatar": rows[i].avatar,
+           "resetPasswordToken": rows[i].resetPasswordToken,
+           "resetPasswordExpires": rows[i].resetPasswordExpires
+         }
+         deferred.resolve(user);
+      }
+      if (rows.length == 0) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
+    }
+
+    }
+      connection.end();
+    });
+  });
+  return deferred.promise;
+}
+
+exports.findToken = function (token) {
+  var deferred = Q.defer();
+
+  var user;
+
+  pool.getConnection(function (err, connection) {
+    connection.query('SELECT * FROM flexiprice.researchers where resetPasswordToken = \"' + token + '\";' ,function(err, rows, fields) {
+    if (err!= null) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
+    }
+
+    if (err == null) {
+      for (var i in rows) {
+        console.log(rows[i].email +" "+ rows[i].password +" "+ rows[i].user_id);
+       
+         user = {
+           "email": rows[i].email,
+           "password": rows[i].password,
+           "user_id": rows[i].user_id,
+           "avatar": rows[i].avatar,
+           "resetPasswordToken": rows[i].resetPasswordToken,
+           "resetPasswordExpires": rows[i].resetPasswordExpires
+         }
+         deferred.resolve(user);
+      }
+      if (rows.length == 0) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
+    }
+
+    }
+      connection.end();
+    });
+  });
+  return deferred.promise;
+}
+
+//UPDATE `flexiprice`.`researchers` SET `password`='78979', `resetPasswordToken`='76867', `resetPasswordExpires`='987987' WHERE `user_id`='11' and`email`='natalim82@gmail.com';
+exports.updateUser = function (userN) {
+  var deferred = Q.defer();
+
+  var user;
+
+  pool.getConnection(function (err, connection) {
+    connection.query('UPDATE flexiprice.researchers SET ? WHERE user_id=? and email=?;', [userN, userN.user_id, userN.email] ,function(err, rows, fields) {
+    if (err!= null) {
+      console.log("Error finding user" + err);
+       deferred.resolve(false);
+    }
+
+    if (err == null) {
+        console.log("1. Changed user token");
+        connection.query('SELECT * FROM flexiprice.researchers where email = \"' + userN.email + '\";' ,function(err, rows, fields) {
+          if (err!= null) {
+            console.log("Error finding user" + err);
+          }
+
+          if (err == null) {
+            for (var i in rows) {
+              console.log(rows[i].email +" "+ rows[i].password +" "+ rows[i].user_id);
+              user = {
+               "email": rows[i].email,
+               "password": rows[i].password,
+               "user_id": rows[i].user_id,
+               "avatar": rows[i].avatar,
+                "resetPasswordToken": rows[i].resetPasswordToken,
+                "resetPasswordExpires": rows[i].resetPasswordExpires
+             }
+             deferred.resolve(user);
+           }
+         }
+            
+       });
+      }
+    
+      connection.end();
+    });
+  });
+  return deferred.promise;
+}
+
+
 
 //INSERT INTO `flexiprice`.`experiments` (`user_id`, `category_id`, `experiment_name`, `experiment_desc`, `creation_date`, `last_modified`, `survey_link`, `show_prices`, `open_negotiation`, `use_min_price`, `private`, `active`) 
 //VALUES ('1', '1', 'hello', 'something', '12/04/15', '15/04/15', 'link.com', '1', '0', '0', '0', '1');

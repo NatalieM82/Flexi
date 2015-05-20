@@ -76,7 +76,7 @@ input {
 							
 						}
 
-						#signinSection {
+						#signinSection, #forgotSection {
 							display: block;
 						    margin-left: auto;
 						    margin-right: auto;
@@ -85,6 +85,8 @@ input {
     						width: -webkit-fit-content;
     						margin-top: 60px;
 						}
+
+						#forgotSection { position:relative;}
 
 						#local-sign-in, #local-reg {
 							color:#ffffff;
@@ -156,7 +158,7 @@ input {
 														//border: 1px solid white; }
 
 
-.signinInput {
+.signinInput, .resetInput {
 	border: 1px solid #ffffff;
 	border-radius: 5px;
 	height: 70px;
@@ -169,14 +171,13 @@ input {
 	margin-top: 10px;
 }
 
-.regBtn {
+.regBtn,  .forgotBtn{
 	color:#466a61; 
 	font-size: 30px;
 	font-family: BigMisterC;
 	font-weight: 400;
+	text-decoration: none;
 }
-
-
 
 #local {
 	text-align: center;
@@ -194,12 +195,25 @@ input {
 	right: -28px;
 }
 
+.subBtn1 {
+	background-image: url(../images/GoButton.png);
+	width: 63px;
+	height: 63px;
+	background-color: transparent;
+	border: none;
+	position: absolute;
+	top:60px;
+	right:-25px;
+}
+
 .subBtn:active {outline:none; !important;}
 .subBtn:focus {outline:none; !important;}
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #231e2b inset;
     -webkit-text-fill-color: #aeaeae !important;
 }
+
+
 
 #wrapper2 {
 	padding-top: 100px;
