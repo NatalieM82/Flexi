@@ -8,9 +8,6 @@ var express = require('express'),
     session = require('express-session'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
-    TwitterStrategy = require('passport-twitter'),
-    GoogleStrategy = require('passport-google'),
-    FacebookStrategy = require('passport-facebook'),
     aws = require('aws-sdk');
 
 var flash = require('express-flash');
@@ -19,6 +16,7 @@ var fs = require('fs');
 var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var url = require('url');
 
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
@@ -256,26 +254,29 @@ app.post('/forgot', function(req, res, next) {
         subject: 'FlexiPrice Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'http://' + req.headers.host + '/reset?token=' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
         done(err, 'done');
       });
     }
   ], function(err) {
     if (err) return next(err);
-    res.redirect('/forgot');
+    
+    res.redirect('/');
+    req.session.notice = 'An e-mail has been sent to you with further instructions.';
   });
 });
 
-app.get('/reset/:token', function(req, res) {
+app.get('/reset', function(req, res) {
   //User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-    funct.findToken(req.params.token)
+    var urlPart = url.parse(req.url, true);
+    var query = urlPart.query;
+    funct.findToken(query.token)
       .then(function (user) {
     if (!user) {
-      req.flash('error', 'Password reset token is invalid or has expired.');
+      console.log('Password reset token is invalid or has expired.');
       return res.redirect('/forgot');
     }
     console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
@@ -286,17 +287,21 @@ app.get('/reset/:token', function(req, res) {
   });
 });
 
-app.post('/reset/:token', function(req, res) {
+app.post('/reset', function(req, res) {
   async.waterfall([
     function(done) {
       //User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-      funct.findToken(req.params.token)
+        var urlPart = url.parse(req.url, true);
+        var query = urlPart.query;
+       
+      funct.findToken(query.token)
       .then(function (user) {
         if (!user) {
-          req.flash('error', 'Password reset token is invalid or has expired.');
+          console.log('Password reset token is invalid or has expired.');
           return res.redirect('back');
         }
         console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+        console.log("New Password: "+req.body.password);
         user.password = req.body.password;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
@@ -332,11 +337,14 @@ app.post('/reset/:token', function(req, res) {
       };
       smtpTransport.sendMail(mailOptions, function(err) {
         req.flash('success', 'Success! Your password has been changed.');
+        req.session.notice = 'Success! Your password has been changed.';
+        
         done(err);
       });
     }
   ], function(err) {
     res.redirect('/');
+    req.session.notice = 'Success! Your password has been changed.';
   });
 });
 

@@ -76,7 +76,7 @@ input {
 							
 						}
 
-						#signinSection, #forgotSection {
+						#signinSection, #forgotSection, #resetSection {
 							display: block;
 						    margin-left: auto;
 						    margin-right: auto;
@@ -86,7 +86,7 @@ input {
     						margin-top: 60px;
 						}
 
-						#forgotSection { position:relative;}
+						#forgotSection, #resetSection{ position:relative;}
 
 						#local-sign-in, #local-reg {
 							color:#ffffff;

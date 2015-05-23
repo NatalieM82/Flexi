@@ -179,9 +179,12 @@ exports.updateUser = function (userN) {
   var deferred = Q.defer();
 
   var user;
+          console.log("User Details: " +userN.resetPasswordToken+" "+ userN.resetPasswordExpires +" "+userN.email+" "+userN.user_id);
+          var temp = userN.password
+  user = { password: temp, resetPasswordToken: userN.resetPasswordToken, resetPasswordExpires:userN.resetPasswordExpires};
 
   pool.getConnection(function (err, connection) {
-    connection.query('UPDATE flexiprice.researchers SET ? WHERE user_id=? and email=?;', [userN, userN.user_id, userN.email] ,function(err, rows, fields) {
+    connection.query('UPDATE flexiprice.researchers SET ? WHERE user_id=? and email=?;', [user, userN.user_id, userN.email] ,function(err, rows, fields) {
     if (err!= null) {
       console.log("Error finding user" + err);
        deferred.resolve(false);
