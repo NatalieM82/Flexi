@@ -2,8 +2,8 @@
 var Q = require('q');
 var mysql      = require('mysql');
 var pool = mysql.createPool({
-  //host     : 'workflow.cmdci40vhwqs.eu-central-1.rds.amazonaws.com',
-  host     : 'flexiprice.c23asrnrwnqz.us-west-2.rds.amazonaws.com',
+  host     : 'workflow.cmdci40vhwqs.eu-central-1.rds.amazonaws.com',
+  //host     : 'flexiprice.c23asrnrwnqz.us-west-2.rds.amazonaws.com',
   user     : 'flexiprice',
   password : 'flexi2015',
   database : 'flexiprice'
