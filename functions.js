@@ -603,16 +603,25 @@ exports.updateProduct = function (name, description, value, min_price, url, file
   console.log(name + " " + description + " " + value + " " + min_price + " " + product_id);
 
  var final_url;
-  if (url == null && file_url != "")
+
+  // if (url == null && file_url != "")
+  // {
+  //   final_url = file_url;
+  // }
+
+
+  // if (url != null && file_url == "")
+  // {
+  //   final_url = url;
+  // }
+
+  switch(type)
   {
-    final_url = file_url;
+    case 'URL': final_url = url; break;
+    case 'Image': final_url = file_url; break;
   }
 
 
-  if (url != null && file_url == "")
-  {
-    final_url = url;
-  }
     console.log("Link: " +url+" File: " + file_url + " Final:" +final_url);
 
   var post = {
