@@ -211,19 +211,14 @@ app.post('/forgot', function(req, res, next) {
       // User.findOne({ email: req.body.email }, function(err, user) {
         funct.findUser(req.body.email)
       .then(function (user) {
-        console.log('finding user');
         if (!user) {
           req.flash('error', 'No account with that email address exists.');
           return res.redirect('/forgot');
         }
 
-        console.log('found user');
-
         user.resetPasswordToken = token;
         user.resetPasswordExpires = (Date.now() + 3600000); // 1 hour
        
-        console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
-
         // user.save(function(err) {
         //   done(err, token, user);
         // });
@@ -231,7 +226,7 @@ app.post('/forgot', function(req, res, next) {
         funct.updateUser(user)
         .then(function (user,err) { 
           console.log("2. Changed user token");
-          console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+          //console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
           done(err, user.resetPasswordToken, user);
         });
         
@@ -274,15 +269,20 @@ app.get('/reset', function(req, res) {
     var urlPart = url.parse(req.url, true);
     var query = urlPart.query;
     funct.findToken(query.token)
-      .then(function (user) {
-    if (!user) {
-      console.log('Password reset token is invalid or has expired.');
-      return res.redirect('/forgot');
-    }
-    console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
-    res.render('reset', {
-      user: req.user
-    });
+    .then(function (user) {
+        if (!user) {
+          console.log('Password reset token is invalid.');
+          return res.redirect('/forgot');
+        }
+        if (Date.now() > user.resetPasswordExpires)
+        {
+          console.log('Password reset token has expired.');
+          return res.redirect('/forgot');
+        }
+        //console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+        res.render('reset', {
+          user: req.user
+        });
 
   });
 });
@@ -300,8 +300,13 @@ app.post('/reset', function(req, res) {
           console.log('Password reset token is invalid or has expired.');
           return res.redirect('back');
         }
-        console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
-        console.log("New Password: "+req.body.password);
+        if (Date.now() > user.resetPasswordExpires)
+        {
+          console.log('Password reset token has expired.');
+          return res.redirect('/forgot');
+        }
+        // console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+        // console.log("New Password: "+req.body.password);
         user.password = req.body.password;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
@@ -315,7 +320,7 @@ app.post('/reset', function(req, res) {
         funct.updateUser(user)
         .then(function (user,err) { 
           console.log("3. Changed user token");
-          console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
+          //console.log("User Details: " +user.resetPasswordToken+" "+ user.resetPasswordExpires +" "+user.email+" "+user.user_id);
           done(err, user);
         });
       });
