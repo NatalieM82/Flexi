@@ -5,7 +5,7 @@ var pool = mysql.createPool({
   host     : 'flexiprice.c23asrnrwnqz.us-west-2.rds.amazonaws.com',
   user     : 'flexiprice',
   password : 'flexi2015',
-  database : 'flexiprice',
+  database : 'flexiprice'
 });
 
 
