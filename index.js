@@ -817,12 +817,24 @@ app.get('/Excel', function(req, res){
   var query = urlPart.query;
   var iteration_id = query.iterationId;
 
+//iteration_id,userId, name, grade, balance, question_title, 
+//answer, product_name, min_price, expected_price, paid_price, reveled_price, rating 
     var conf={}
     conf.cols=[
         {
             caption:'Iteration ID',
             type:'string',
             width:10
+        },
+        {
+            caption:'User ID',
+            type:'string',
+            width:10
+        },
+                {
+            caption:'Name',
+            type:'string',
+            width:50
         },
         {
             caption:'Grade',
@@ -835,15 +847,20 @@ app.get('/Excel', function(req, res){
             width:4
         },
         {
-            caption:'Name',
+            caption:'Question Title',
             type:'string',
             width:50
         },
         {
-            caption:'User ID',
+            caption:'Answer',
             type:'string',
-            width:10
+            width:50
         },
+        {
+            caption:'Product Name',
+            type:'string',
+            width:50
+        },       
         {
             caption:'Min Price',
             type:'number',
@@ -855,29 +872,14 @@ app.get('/Excel', function(req, res){
             width:10
         },
         {
-            caption:'Reveled Price',
-            type:'number',
-            width:4
-        },
-        {
             caption:'Paid Price',
             type:'number',
             width:4
         },
         {
-            caption:'Question Title',
-            type:'string',
-            width:50
-        },
-        {
-            caption:'Product Name',
-            type:'string',
-            width:50
-        },
-        {
-            caption:'Answer',
-            type:'string',
-            width:50
+            caption:'Reveled Price',
+            type:'number',
+            width:4
         },
         {
             caption:'Rating',
@@ -911,9 +913,10 @@ app.get('/Excel', function(req, res){
                       arr.push(a);
                   }
 
-                  console.log(arr);
+                  
 
                   conf.rows=arr;
+                  console.log(conf.rows);
                   var result = nodeExcel.execute(conf);
                   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
                   res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
