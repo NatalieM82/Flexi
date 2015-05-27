@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-
+{{#items}}
 function goSimulations() {
 	document.getElementById("simTab").style.background = "#524567";
 	document.getElementById("detailTab").style.background = "#231e2b";
@@ -16,12 +16,34 @@ function goSimulations() {
 		document.getElementById("FlipSide").style.display = "none";  }
 		
 
+function createLink(){
+	var link = "http://localhost:5000/experimentWelcomePage?exp_id="+{{experiment_id}}+"&iteration_id=";
+	var token = randomString();
+	link += token;
+	console.log(link);
+	document.getElementById("shareLink").style.width = "100%";
+	document.getElementById("shareLink").style.fontSize="110%";
+	document.getElementById("shareLink").value= link;
+	document.getElementById("share_token").value= token;
+	document.getElementById("share_link").value = link;
+	document.getElementById("shareLink").disabled=true;
+}
 
-		</script>
+function randomString() {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var string_length = 8;
+	var randomstring = '';
+	for (var i=0; i<string_length; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	return randomstring;
+}
+</script>
 		<link rel="stylesheet" href="includes/styleExperiments.css">
 
 		<section id="main"> 
-{{#items}}
+
 			<section id="toolBar">
 				<article id="view"> = </article>
 				<article id="new"> + </article> 
@@ -89,8 +111,9 @@ function goSimulations() {
 							&nbsp &nbsp &nbsp  Wallet : &nbsp  
 							<input class="numStyle" type="number" name="wallet" min="0" value="{{starting_wallet}}"><br>
 
-							<input class="shareStyle" type="share" value="Share Link">
-
+							<input class="shareStyle" type="text" onclick="createLink()" id="shareLink" value="Share Link" name="shareLink">
+							<input type="hidden" id="share_link" name="share_link"/>
+							<input type="hidden" id="share_token" name="share_token"/>
 						</section>
 
 						<section id="rightSideF">
@@ -150,71 +173,23 @@ function goSimulations() {
 							<table id="keywords" cellspacing="0" cellpadding="0">
 								<thead>
 									<tr>
-										<th><span>#</span></th>
+										
 										<th><span>Date</span></th>
 										<th><span>Subjects</span></th>
 										<th><span>Comments</span></th>
+										<th><span>Link</span></th>
 										<th><span>Export</span></th>
 									</tr>
 								</thead>
 								<tbody>
-										<!-- <tr>
-											<td class="lalign">1</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
-												<label for="cb1"> </label><br></td>
-										</tr>
-										<tr>
-											<td class="lalign">2</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb2" name="cb" value="">
-												<label for="cb2"> </label></td>
-											</tr>
-										<tr>
-											<td class="lalign">3</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb3" name="cb" value="">
-												<label for="cb3"> </label></td>
-										</tr>
-										<tr>
-											<td class="lalign">4</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb4" name="cb" value="">
-												<label for="cb4"> </label></td>
-										</tr>
-										<tr>
-											<td class="lalign">5</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb5" name="cb" value="">
-												<label for="cb5"> </label></td>
-										</tr>
-										<tr>
-											<td class="lalign">6</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td>Data Cell</td>
-											<td><input class="dotBox" type="checkbox" id="cb6" name="cb" value="">
-												<label for="cb6"> </label></td>
-										</tr> -->
-
 										{{#each iterations}}
 											<tr>
-												<td class="lalign">1</td>
-												<td>Data Cell</td>
-												<td>Data Cell</td>
-												<td>Data Cell</td>
-												<td><input class="dotBox" type="checkbox" id="cb1" name="cb" value="">
-													<label for="cb1"> </label><br></td>
+												
+												<td>{{date}}</td>
+												<td>{{subjects}}</td>
+												<td>{{comment}}</td>
+												<td>{{link}}</td>
+												<td><a href="/excel?iterationId={{iteration_id}}">Export</a><br></td>
 											</tr>
 										{{/each}}
 								</tbody>

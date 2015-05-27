@@ -1,35 +1,93 @@
 
       </section>
-      
-
+           <a class="cbp-vm-icon cbp-vm-add" id="continueBTN" onclick="rating()">Continue</a>
       <section id="formArea"> 
-        <form action="action_page.php">
+       
           <section id="objContainer">
-            You buy an item which might help you solve this question: <br><br>
-            Make an offer : <input class="inpStyle" type="text" name="name">
-            <input class="conStyle" type="submit" value="Confirm"><br><br><br><br>
-            
             You can choose only one : <br><br>
+            <section id="showPrices">
+                <table id="keywords" cellspacing="0" cellpadding="0">
+                  <thead>
+                    <tr>
+                      <th><span>Name</span></th>
+                      <th><span>Price</span></th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each details}}
+                      <tr>
+                        <td class="lalign"><a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" onclick="paymentAlgorithm({{product_id}}, '{{path}}', {{value}}, '{{name}}')">{{name}}</a></td>
+                        <td>{{value}}</td>
+                      </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+            </section>
 
-            <table id="keywords" cellspacing="0" cellpadding="0">
-              <thead>
-                <tr>
-                  <th><span>Name</span></th>
-                  <th><span>Price</span></th>
-                  
-                </tr>
-              </thead>
-              <tbody>
-                {{#each details}}
+            <section id="hidePrices">
+              <table id="keywords" cellspacing="0" cellpadding="0">
+                <thead>
                   <tr>
-                    <td class="lalign"><a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" onclick="myFunction('{{path}}', {{value}})">{{name}}</a></td>
-                    <td>{{value}}</td>
+                    <th><span>Name</span></th>
+                  
+                    
                   </tr>
-                {{/each}}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {{#each details}}
+                    <tr>
+                      <td class="lalign"><a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" onclick="paymentAlgorithm({{product_id}},'{{path}}', {{min_price}}, '{{name}}')">{{name}}</a></td>
+                      
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </section>
+
           </section>  
-        </form>   
+        
+      </section>
+
+      <section id="ratingArea">
+        <h3>Please rate the product you used in this experiment</h3>
+        <h4>In the "tip" box, please enter the amount you wish to add on top of what you already paid </h4>
+        <table id="keywords1" cellspacing="0" cellpadding="0">
+                <thead>
+                  <tr>
+                    <th><span>Name</span></th>
+                    <th><span>Tip</span></th>
+                    <th><span>Rating</span></th>
+                  </tr>
+                </thead>
+<!--                 <tbody>
+                  {{#each details}}
+                    <tr>
+                      <td class="lalign">
+                        <a role="button" class="cbp-vm-icon cbp-vm-add" target="_blank" href="{{path}}">{{name}}</a>
+                      </td>
+
+                      <td>
+                        <input class="numStyle" type="number" name="tip" min="0" step="1" value="0">
+                      </td>
+                      <td>
+                        <select class="inpStyle" name="rating">
+                          <option value="Very Helpfull" selected>Very Helpfull</option>
+                          <option value="Helpfull">Helpfull</option>
+                          <option value="So so">So so</option>
+                          <option value="Didn't helped at all">Didn't helped at all</option>
+                          <option value="BAD!">BAD!</option>
+                        </select>
+                      </td> 
+                    </tr>
+                  {{/each}}
+                </tbody> -->
+        </table>
+        <section id="rateTable">
+          
+        </section>
+        <input class="subStyle" type="submit" value="Submit" onclick="submitAll()">
+        
       </section>
 
     </section>  
@@ -39,18 +97,63 @@
 
 <script>
 var lastScore;
-          
+var questionNum;
+var question = {
+  user_id:"",
+  min_price:"",
+  expected_price:[],
+  reveled_price:"",
+  paid_price:"",
+  product_name:"",
+  title:"",
+  answer:"",
+  rating:""
+};
+
         window.onload = function() {
+          
+
           if (typeof(Storage) != "undefined") {
-                // Store
-                //localStorage.setItem("wallet", {{details.1.starting_wallet}});
-                // Retrieve
+                  
                 if (sessionStorage.getItem("wallet") === null) {
                     sessionStorage.setItem("wallet", {{details.1.starting_wallet}});
                 }
-               
-
                 document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+
+                if (sessionStorage.getItem("iteration") === null) {
+                    sessionStorage.setItem("iteration", "{{iteration_id}}");
+                }
+
+                if (sessionStorage.getItem("name") === null) {
+                    sessionStorage.setItem("name", "{{name}}");
+                }
+
+                if (sessionStorage.getItem("score") === null) {
+                    sessionStorage.setItem("score", 0);
+                }
+
+
+                if (sessionStorage.getItem("questionNumber") === null) {
+                    sessionStorage.setItem("questionNumber", 0);
+                }
+
+                //Adding product to session storage
+                {{#each details}}
+                  var temp = {
+                    product_id: {{product_id}},
+                    name: "{{name}}",
+                    path: "{{path}}",
+                    value: {{value}},
+                    min_price: {{min_price}},
+                    avilable: false
+                  };
+                  
+                  if (sessionStorage.getItem("product"+{{product_id}}) === null) {
+                    sessionStorage.setItem("product"+{{product_id}}, JSON.stringify(temp));
+                  }
+                {{/each}}
+              
+                
             } else {
                 document.getElementById("wallet").innerHTML = "Sorry, your browser does not support Web Storage...";
             }
@@ -60,32 +163,430 @@ var lastScore;
             var score = document.getElementsByClassName("sg-question-options")[0].innerText;
             var numberPattern = /\d+/g;
             score = score.match(numberPattern);
-            document.getElementById("score").innerHTML += score;
             
-          } 
-          catch(err) {
-            var score = document.getElementsByClassName("sg-question-options")[0].innerText;
-            document.getElementsByClassName("sg-question-options")[0].style.visibility = "hidden";
-            var numberPattern = /\d+/g;
-            score = score.match(numberPattern);
             if (score) {
               lastScore = score;
             }
-            document.getElementById("score").innerHTML = lastScore;
+            else if(score == null) {
+              lastScore = 0;
+            }
+            sessionStorage.setItem("score", lastScore);
+            document.getElementById("score").innerHTML = sessionStorage.getItem("score");
+            
+
+            //Getting Question Number
+            questionNum = document.getElementsByClassName("sg-question-number")[0].innerText;
+            questionNum = (questionNum).replace(/[^0-9]/g, '');
+            console.log("Question Number: " + questionNum);
+
+              if (questionNum != null) {
+                if (sessionStorage.getItem("question"+questionNum) === null) {
+                    var title = document.getElementsByClassName("sg-question-title")[0].innerText;
+                    console.log(title);
+                    question[title] = title;
+                    sessionStorage.setItem("question"+questionNum, question);
+                }
+              }
+
+          } 
+          catch(err) {
+            //Getting Question Number
+            questionNum = document.getElementsByClassName("sg-question-number")[0].innerText;
+            questionNum = (questionNum).replace(/[^0-9]/g, '');
+            if (questionNum == "")
+            {
+              questionNum = document.getElementsByClassName("sg-question-number")[1];
+              if (questionNum != null)
+              {
+                questionNum = questionNum.innerText;
+                questionNum = (questionNum).replace(/[^0-9]/g, '');
+              }
+            }
+
+            console.log("Question Number: " + questionNum);
+
+            if (questionNum != null) {
+            if (sessionStorage.getItem("question"+questionNum) === null) {
+                var title;
+                if (questionNum == 1) title = document.getElementsByClassName("sg-question-title")[0].innerText;
+                if(questionNum > 1) title = document.getElementsByClassName("sg-question-title")[1].innerText;
+                console.log(title);
+                question["title"] = title;
+                sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
+                console.log(sessionStorage.getItem("question"+questionNum));
+            }
           }
+            
+
+            if(questionNum > 1)
+            {
+              console.log("Question is bigger than 1");
+              var score = document.getElementsByClassName("sg-question-options")[0].innerText;
+              document.getElementsByClassName("sg-question-options")[0].style.visibility = "hidden";
+              var numberPattern = /\d+/g;
+              score = score.match(numberPattern);
+                if (score) {
+                  lastScore = score;
+                }
+                else if(score == null) {
+                  if (lastScore == null) lastScore = 0;
+                }
+
+              sessionStorage.setItem("questionNumber", JSON.parse(sessionStorage.getItem("questionNumber"))+1);
+            }
+
+            if (questionNum == 1)
+            {
+              console.log("First Question");
+              lastScore = 0;
+              sessionStorage.setItem("questionNumber", JSON.parse(sessionStorage.getItem("questionNumber"))+1);
+            }
+
+            if (questionNum == null)
+            {
+              lastScore = sessionStorage.getItem("score");
+              document.getElementById("continueBTN").style.display = "block";
+            }
+
+            //if (lastScore == null) lastScore = 0;
+            sessionStorage.setItem("score", lastScore);
+            document.getElementById("score").innerHTML = sessionStorage.getItem("score");
+
+
+          }
+
+          showProducts();
         };
 
-        function myFunction(path, price) {
-    
-          if (confirm("Do you want to make a purchase?") == true) {
-              window.open(path, '_blank');
-              sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - price);
-              document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
-              console.log(sessionStorage.getItem("wallet"));
+        //showing the products in table
+        function showProducts(){
+          switch("{{details.1.show_prices}}")
+          {
+            case "on":
+            {
+                document.getElementById("showPrices").style.display = "block";
+                document.getElementById("hidePrices").style.display = "none";
+                break;
+            }
+            case "off":
+            {
+                document.getElementById("hidePrices").style.display = "block";
+                document.getElementById("showPrices").style.display = "none";
+                break;
+            }
+          }
+        }
 
-          } else {
-              
+
+        function paymentAlgorithm(productId, path, value, productName) {
+          console.log("Wanted: " + productId);
+          var temp = JSON.parse(sessionStorage.getItem("product"+productId));
+
+          console.log(temp);
+          if(temp["avilable"] === true)
+          {
+            console.log("You already bought the item");
+            window.open(path, '_blank');
+            return;
+          }
+
+          switch("{{details.1.show_prices}}")
+          {
+            case "on":
+            {
+                 if (confirm("Do you want to make a purchase?") == true) {
+                    if((sessionStorage.getItem("wallet") - value) > 0)
+                    {
+                      window.open(path, '_blank');
+                      sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - value);
+                      document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+                      console.log(sessionStorage.getItem("wallet"));
+
+                      temp["avilable"] = true;
+                      sessionStorage.setItem("product"+productId, JSON.stringify(temp));
+                      console.log(sessionStorage.getItem("product"+productId));
+
+                      question["min_price"] = value;
+                      question["product_name"] = productName;
+                      question["expected_price"] = value;
+                      question["paid_price"] = value;
+                      sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
+                    }
+                    else {
+                      alert("Sorry, but you don't have enough money");
+                    }
+                  } else {
+                      
+                  }
+                  break;
+            }
+            case "off":
+            {
+              console.log("2");
+              makingAPurchase (productId,path,value, productName);
+              break;
+            }
           }
     
         }
+
+        //In case the "show prices" is off
+        function makingAPurchase (productId, path,value, productName) {
+          switch ("{{details.1.open_negotiation}}")
+          {
+            case "on":
+            {
+                console.log("3");
+                openNegPop(productId, path, productName, value);
+                break;
+            }
+            case "off":
+            {
+                switch("{{details.1.use_min_price}}")
+                {
+                  case "on":
+                  {
+                    useMinPriceOn(productId,path,value, productName);
+                    break;
+                  }
+                  case "off":
+                  {
+                    useMinPriceOff(productId,path,value, productName);
+                    break;
+                  }
+                }
+                break;
+            }
+          }
+        }
+
+        //Open negotiation is on
+        function openNegPop(productId, path, productName, value) {  
+        console.log("openNegPop");         
+          console.log("4");
+          var price = prompt("Enter a price");
+          if (price == "") openNegPop(productId, path, productName);
+
+          else{
+            if (price !== null) {
+              if((sessionStorage.getItem("wallet") - price) > 0)
+              {
+                window.open(path, '_blank');
+                sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - price);
+                document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+                console.log(sessionStorage.getItem("wallet"));
+
+                var temp = JSON.parse(sessionStorage.getItem("product"+productId));
+                temp["avilable"] = true;
+                sessionStorage.setItem("product"+productId, JSON.stringify(temp));
+                console.log(sessionStorage.getItem("product"+productId));
+
+                question["min_price"] = value;
+                question["expected_price"] = price;
+                question["paid_price"] = price;
+                question["product_name"] = productName;
+                sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
+              }
+                else {
+                      alert("Sorry, but you don't have enough money");
+                    }
+            }
+            else {}
+          }
+        }
+
+        //Open negotiation off + use min price on
+        function useMinPriceOn(productId, path, value, productName){
+          console.log("useMinPriceOn");
+          var count = {{details.1.max_tries}};
+          var done = false;
+          while (count > 0 && done==false)
+          {
+            var price = prompt("Enter a price");
+            if (price == "") {done = true;}
+
+            else{
+              if (price !== null) {
+                  if(price >= value) {
+                    if((sessionStorage.getItem("wallet") - value) > 0)
+                    {
+                      window.open(path, '_blank');
+                      sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - value);
+                      document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+                      console.log(sessionStorage.getItem("wallet"));
+
+                      var temp = JSON.parse(sessionStorage.getItem("product"+productId));
+                      temp["avilable"] = true;
+                      sessionStorage.setItem("product"+productId, JSON.stringify(temp));
+                      console.log(sessionStorage.getItem("product"+productId));
+                      done = true;
+
+                      question["min_price"] = value;
+                      question["expected_price"].push(price);
+                      question["paid_price"] = value;
+                      question["product_name"] = productName;
+                      sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
+                    }
+                      else {
+                      alert("Sorry, but you don't have enough money");
+                    }
+                  }
+                  else {
+                    count--;
+                    alert("Your price is too low");
+                    question["expected_price"].push(price);
+                    
+                    //useMinPriceOn(path, value);
+                  }
+              }
+              else {done = true;}
+            }
+          }
+          if (count == 0 && done == false)
+          {
+            console.log("Next question");
+            document.getElementById('sg_NextButton').click();
+          }
+
+        }
+
+        //Open negotiation off + use min price off
+        function useMinPriceOff(productId, path, value, productName){
+          console.log("useMinPriceOff");
+          var count = {{details.1.max_tries}};
+          var done = false;
+          while (count > 0 && done==false)
+          {
+            var price = prompt("Enter a price");
+            if (price == "") {done = true;}
+
+            else{
+              if (price !== null) {
+                  if(price >= value) {
+                    if((sessionStorage.getItem("wallet") - price) > 0)
+                    {
+                      window.open(path, '_blank');
+                      sessionStorage.setItem("wallet", sessionStorage.getItem("wallet") - price);
+                      document.getElementById("wallet").innerHTML = sessionStorage.getItem("wallet");
+                      console.log(sessionStorage.getItem("wallet"));
+
+                      var temp = JSON.parse(sessionStorage.getItem("product"+productId));
+                      temp["avilable"] = true;
+                      sessionStorage.setItem("product"+productId, JSON.stringify(temp));
+                      console.log(sessionStorage.getItem("product"+productId));
+                      done = true;
+
+                      question["min_price"] = value;
+                      question["expected_price"].push(price);
+                      question["paid_price"] = value;
+                      question["product_name"] = productName;
+                      sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
+                    }
+                      else {
+                      alert("Sorry, but you don't have enough money");
+                    }
+                  }
+                  else {
+                    count--;
+                    alert("Your price is too low");
+                    question["expected_price"].push(price);
+                    //useMinPriceOn(path, value);
+                  }
+              }
+              else {done = true;}
+            }
+          }
+          if (count == 0 && done == false)
+          {
+            console.log("Next question");
+            document.getElementById('sg_NextButton').click();
+          }
+
+        }
+
+        function submitAll(){
+          console.log("Submitting");
+
+          //Getting Tip and rating
+          for(var i=1;i<=JSON.parse(sessionStorage.getItem("questionNumber"));i++){
+
+            var tip = document.getElementById("tip"+i).value;
+            var rate = document.getElementById("rate"+i).value;
+            var questionTemp = JSON.parse(sessionStorage.getItem("question"+i));
+
+            questionTemp["reveled_price"] = tip;
+            questionTemp["rating"] = rate;
+            sessionStorage.setItem("question"+i, JSON.stringify(questionTemp));
+          }
+
+          var questionsArray = [];
+          for(var i=1;i<=JSON.parse(sessionStorage.getItem("questionNumber"));i++){
+            questionsArray.push(JSON.parse(sessionStorage.getItem("question"+i)));
+          }
+
+
+          var data = {};
+          data.iteration = sessionStorage.getItem("iteration");
+          data.name = sessionStorage.getItem("name");
+          data.numOfquestions = sessionStorage.getItem("questionNumber");
+          data.grade = sessionStorage.getItem("score");
+          data.balance = sessionStorage.getItem("wallet");
+          data.question_array = questionsArray
+
+          var request = $.ajax({
+            url: "/iterationSubmit",
+            async: false,
+            type: "POST",
+            data: data,
+            contentType: "application/x-www-form-urlencoded", //This is what made the difference.
+            dataType: "json",
+          });
+
+
+          request.success(function(result) {
+              console.log(result);
+          });
+
+          request.fail(function(jqXHR, textStatus) {
+              alert("Request failed: " + textStatus);
+          });
+
+
+        }
+
+        function rating() {
+          console.log("I'm rating!");
+          document.getElementById("gizmoContainer").style.display = "none";
+          document.getElementById("formArea").style.display = "none";
+          document.getElementById("continueBTN").style.display = "none";
+          document.getElementById("ratingArea").style.display = "block";
+
+          var tbl=document.getElementById('keywords1');
+          var tbdy=document.createElement('tbody');
+            for(var i=0;i<JSON.parse(sessionStorage.getItem("questionNumber"));i++){
+                var tr=document.createElement('tr');
+                for(var j=0;j<3;j++){
+                    var td=document.createElement('td');
+                    var tempNum = i+1;
+                    var temp = JSON.parse(sessionStorage.getItem("question"+tempNum));
+                    console.log(temp);
+                    var name = temp["product_name"];
+                     
+                    if (name == "") name = "You didn't choose any item in this question"
+                    if (j==0 ) td.innerHTML = name;
+                    if (j == 1) td.innerHTML = "<input class='numStyle' type='number' id='tip" +tempNum+ "' name='tip' min='0' step='1' value='0'>";
+                    if (j==2) {
+                       td.innerHTML = "<select class='inpStyle' name='rating' id='rate"+tempNum + "' > <option value='Very Helpfull' selected>Very Helpfull</option> <option value='Helpfull'>Helpfull</option> <option value='So so'>So so</option> <option value='Did not helped at all'>Did not helped at all</option> <option value='BAD!'>BAD!</option> </select>";
+                    }
+                   
+                    tr.appendChild(td)
+                }
+                tbdy.appendChild(tr);
+            }
+            tbl.appendChild(tbdy);
+            //body.appendChild(tbl)
+
+        }
+
+
 </script>

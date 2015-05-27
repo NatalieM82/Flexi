@@ -36,3 +36,44 @@
   
 #keywords tbody tr td.lalign {
   text-align: center;}
+
+
+
+  #keywords1 {
+  margin: 0 auto;
+  font-size: 1.2em;
+  margin-bottom: 15px;}
+
+#keywords1 thead {
+  cursor: pointer;
+  background: #524567;}
+  
+#keywords1 thead tr th { 
+  font-weight: bold;
+  padding: 12px 30px;
+  padding-left: 42px;}
+  
+#keywords1 thead tr th span { 
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;}
+
+#keywords1 thead tr th.headerSortUp, #keywords1 thead tr th.headerSortDown {
+  background: #382f47;
+  margin-left: 30px;}
+
+#keywords1 thead tr th.headerSortUp span {
+  background-image: url('http://i.imgur.com/SP99ZPJ.png');}
+  
+#keywords1 thead tr th.headerSortDown span {
+  background-image: url('http://i.imgur.com/RkA9MBo.png');}
+
+#keywords1 tbody tr { 
+  color: #555;}
+  
+#keywords1 tbody tr td {
+  text-align: center;
+  padding: 15px 10px;}
+  
+#keywords1 tbody tr td.lalign {
+  text-align: center;}

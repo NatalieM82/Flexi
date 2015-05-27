@@ -28,6 +28,7 @@ function none(){
 		    	document.getElementById('weburl').disabled = false;
 		        document.getElementById("link").checked = true;
 		        document.getElementById("weburl").value = "{{path}}";
+		        document.getElementById('preview').hidden = true;
 		        break;
 		    case "Image":
 		        document.getElementById("image").checked = true;
@@ -36,6 +37,7 @@ function none(){
 		        break;
 		    case "None":
 		        document.getElementById("none").checked = true;
+		        document.getElementById('preview').hidden = true;
 		        break;
 		}
 		{{/product}}

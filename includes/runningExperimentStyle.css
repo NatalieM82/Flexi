@@ -79,7 +79,7 @@ body { height: 100%;
 																border: 1px dashed #77727d;
 																border-radius: 3px;
 																resize: none;
-																width: 70px;
+																width: 150px;
 																height: 40px;
 																padding-left: 10px;
 																box-sizing: border-box;
@@ -93,3 +93,37 @@ body { height: 100%;
 																font-size: 150%;
 																width: 100px;
 																height: 40px;}
+
+
+#showPrices, #hidePrices {
+	display: none;
+}
+
+#continueBTN {
+	display: none;
+}
+
+.subStyle { position: relative;
+            left: 70%;
+            top: 15%;
+            background-color:  #5fa088;
+            border: 1px outset  #77727d;
+            border-radius: 3px;
+            resize: none;
+            font-size: 150%;
+            width: 150px;
+            height: 40px;}
+#ratingArea {
+	display: none;
+}
+
+.numStyle { 
+	background-color:  #171519;
+	border: 1px dashed #77727d;
+	border-radius: 3px;
+	resize: none;
+	width: 50px;
+	height: 30px;
+	text-align: center;
+}
+

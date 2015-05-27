@@ -286,9 +286,9 @@ exports.newExperiment = function (name, description, privateExp, embbedCode, cat
 //UPDATE `flexiprice`.`experiments` SET `user_id`='2', `category_id`='2', `experiment_name`='Real experiment1', `experiment_desc`='This experiment has a real embed code!', 
 //`creation_date`='16/04/20151', `last_modified`='16/04/20151', `gizmo_code`=' gizmo code ', 
 //`show_prices`='off', `open_negotiation`='on', `use_min_price`='on', `active`='0', `max_tries`='3' WHERE `experiment_id`='12';
-exports.updateExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet, exp_id) {
+exports.updateExperiment = function (name, description, privateExp, embbedCode, category, showPrices, tries, user_idNew, openNegotiation, useMinPrice, wallet, exp_id, shareLink, token) {
   console.log("==== Editin  experiment "+exp_id+ "====");
-  console.log(name + " " + description + " " + privateExp + " " + category + " " + showPrices  + " " + tries  + " " +  openNegotiation + " " + useMinPrice + " " + wallet);
+  console.log(shareLink + " " + token);
 
   if (!privateExp) {
     privateExp = 'off';
@@ -317,7 +317,7 @@ exports.updateExperiment = function (name, description, privateExp, embbedCode, 
     category_id: category,
     experiment_name: name,
     experiment_desc : description,
-    creation_date: today,
+    //creation_date: today,
     last_modified: today,
     gizmo_code: embbedCode,
     show_prices: showPrices,
@@ -326,14 +326,32 @@ exports.updateExperiment = function (name, description, privateExp, embbedCode, 
     private: privateExp,
     active: '1',
     max_tries: tries,
-    starting_wallet: wallet
+    starting_wallet: wallet,
+    survey_link: shareLink
   }
-
- // var sql = 'UPDATE flexiprice.experiments SET user_id=2, category_id=2, experiment_name=Real experiment1, experiment_desc=This experiment has a real embed code!, creation_date=16/04/20151, last_modified=16/04/20151, gizmo_code=embbedCode, show_prices=off, open_negotiation=on, use_min_price=on, active=0, max_tries=3 WHERE experiment_id=12;'
-//      connection.query(sql, user_id , function (err, rows) {
 
   pool.getConnection(function (err, connection){
     connection.query('UPDATE flexiprice.experiments SET ?  WHERE experiment_id = ?', [post, exp_id], function (err, result) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+
+      }
+          connection.end();
+    });
+  });
+
+  var post2 = {
+    iteration_id: token,
+    experiment_id: exp_id,
+    researcher_id: user_idNew,
+    link: shareLink
+  }
+
+  //INSERT INTO `flexiprice`.`iterations` (`iteration_id`, `experiment_id`, `researcher_id`, `link`) VALUES ('something', '12', '4', 'gfgdfgdf');
+  pool.getConnection(function (err, connection){
+    connection.query('INSERT INTO flexiprice.iterations SET ?', post2, function (err, result) {
       if (err != null) {
         console.log(err);
       }
@@ -382,6 +400,7 @@ function getTodayDate() {
 
   return today;
 }
+
 
 exports.getExperiments = function (user_id) {
   var deferred = Q.defer();
@@ -756,7 +775,7 @@ exports.getIterations = function (experiment_id) {
  
    pool.getConnection(function (err, connection) {
    var sql = 'SELECT * FROM flexiprice.iterations where experiment_id=?;'
-     connection.query(sql, category_id , function (err, rows) {
+     connection.query(sql, experiment_id , function (err, rows) {
     if (err!= null) {
       console.log("Error finding iterations" + err);
       deferred.reject(new Error(err.body));
@@ -764,6 +783,172 @@ exports.getIterations = function (experiment_id) {
 
     if (err == null) {
          deferred.resolve(rows);
+       }  
+       connection.end();
+    
+    });
+   });
+
+  return deferred.promise;
+}
+
+//Enter User iteration details
+//INSERT INTO `flexiprice`.`users` (`iteration_id`, `grade`, `balance`, `name`) VALUES ('353454', '434', '23', '534543');
+exports.iterationDetails = function (details) {
+  console.log("==== Adding Iteration Details ====");
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+
+  var tempUserId = randomString();
+
+  var postNew = {
+    iteration_id: details.iteration,
+    grade: details.grade,
+    balance : details.balance,
+    name: details.name,
+    user_id: tempUserId
+  }
+
+  var postUpdate = {
+    iteration_id: details.iteration,
+    grade: details.grade,
+    balance : details.balance
+  }
+
+  pool.getConnection(function (err, connection){
+    connection.query('SELECT * FROM flexiprice.users where name = \"' + details.name + '\";' ,function(err, rows, fields) {
+      if (err!= null) {
+        console.log("Error finding user" + err);
+      }
+      if (err == null) {
+        if (rows.length > 0)
+        {
+          var tempUserId1;
+          for (var i in rows) {
+            console.log(rows[i].name +" "+ rows[i].user_id);
+            tempUserId1 = rows[i].user_id;
+          }
+
+          connection.query('UPDATE flexiprice.users SET ? WHERE name = ?', [postUpdate, details.name], function (err, result) {
+            if (err != null) {
+              console.log(err);
+            }
+            if (err == null) {                           
+              exports.iterationDetailsQuestions(details, tempUserId1);
+            }
+                connection.end();
+          });
+
+        }
+        else {
+          console.log("User Doesn't exist");
+          connection.query('INSERT INTO flexiprice.users SET ?', postNew, function (err, result) {
+            if (err != null) {
+              console.log(err);
+            }
+            if (err == null) {                           
+                exports.iterationDetailsQuestions(details, tempUserId);
+
+            }
+                connection.end();
+          });
+        }
+        
+     }
+
+    });
+
+    
+  });
+
+  exports.updateIteration(details.iteration);
+}
+
+//INSERT INTO `flexiprice`.`questions` (`user_id`, `min_price`, `expected_price`, `reveled_price`, `paid_price`, `question_title`, `product_name`, `answer`, `rating`) VALUES ('rerwer', '21', '12', '32', '12', 'fggdgdg', 'refgfdg', 'gfgd', 'gfdgd');
+exports.iterationDetailsQuestions = function (details, userId) {
+  console.log("==== Adding Iteration Questions Details to user: "+ userId +" ====");
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+
+
+
+  pool.getConnection(function (err, connection){
+    for (var i=0 ; i<details.numOfquestions ; i++){
+      var post = {
+        user_id: userId,
+        min_price: details["question_array["+i+"][min_price]"],
+        expected_price: JSON.stringify(details["question_array["+i+"][expected_price][]"]),
+        reveled_price: details["question_array["+i+"][reveled_price]"],
+        paid_price: details["question_array["+i+"][paid_price]"],
+        question_title: JSON.stringify(details["question_array["+i+"][title]"]),
+        product_name: JSON.stringify(details["question_array["+i+"][product_name]"]),
+        answer: JSON.stringify(details["question_array["+i+"][answer]"]),
+        rating: JSON.stringify(details["question_array["+i+"][rating]"])
+       }
+
+      connection.query('INSERT INTO flexiprice.questions SET ?', post, function (err, result) {
+        if (err != null) {
+          console.log(err);
+        }
+        if (err == null) {                           
+
+        }
+            
+      });
+    }
+
+        connection.end();
+  });
+
+    
+
+}
+
+//UPDATE `flexiprice`.`iterations` SET `date`='32', `subjects`='43' WHERE `iteration_id`='5s2cF52G' and`experiment_id`='12' and`link`='http://localhost:5000/experimentWelcomePage?exp_id=12&iteration_id=5s2cF52G';
+exports.updateIteration = function(iterationId){
+  console.log("==== Updating iteration id: "+ iterationId +" ====");
+
+  
+
+  pool.getConnection(function (err, connection){
+     var sql = 'UPDATE flexiprice.iterations SET date=\''+getTodayDate() +'\', subjects=subjects+1 WHERE iteration_id=?;'
+     connection.query(sql, iterationId , function (err, rows) {
+      if (err != null) {
+        console.log(err);
+      }
+      if (err == null) {                           
+
+      }
+          connection.end();
+    });  
+   });
+}
+
+
+function randomString() {
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  var string_length = 8;
+  var randomstring = '';
+  for (var i=0; i<string_length; i++) {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum,rnum+1);
+  }
+  return randomstring;
+}
+
+//Getting Iteration Details for excel
+exports.getIterationsDetails = function (iterationId) {
+  var deferred = Q.defer();
+ 
+   pool.getConnection(function (err, connection) {
+   var sql = 'SELECT * FROM flexiprice.users INNER JOIN questions ON users.user_id = questions.user_id And users.iteration_id=?;'
+     connection.query(sql, iterationId , function (err, rows) {
+    if (err!= null) {
+      console.log("Error finding running experiment" + err);
+      deferred.reject(new Error(err.body));
+    }
+
+    if (err == null) {
+
+        deferred.resolve(rows);
        }  
        connection.end();
     

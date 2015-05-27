@@ -18,6 +18,10 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var url = require('url');
 
+var nodeExcel = require('excel-export');
+var dateFormat = require('dateformat');
+
+
 
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
@@ -30,6 +34,8 @@ var app = express();
 app.use('/includes',express.static(path.join(__dirname, 'includes')));
 app.use('/images',express.static(path.join(__dirname, 'images')));
 app.use(express.static(__dirname + 'views/public'));
+
+
 //===============PASSPORT===============
 
 // Passport session setup.
@@ -421,7 +427,22 @@ app.get('/ModifyExperiment:id' , isLoggedIn, function(req, res){
           if (categoriesList) {
              console.log("Items length:" + categoriesList.length);
              console.log (categoriesList);
-              res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList, categories:categoriesList});
+
+              funct.getIterations(id)
+              .then(function (iterations) {
+                if (iterations) {
+                   res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList, categories:categoriesList, iterations:iterations});
+                   done(null, itemsList, categoriesList, iterations);
+                }
+                if (!iterations) {
+                  console.log("COULD NOT FIND");
+                  done(null, iterations);
+                }
+                    })
+            .fail(function (err){
+              console.log("**** Error: " + err.body);
+            });
+             
             done(null, itemsList, categoriesList);
           }
           if (!categoriesList) {
@@ -449,7 +470,8 @@ app.post('/SubmitModifiedExperiment:experiment_id' , isLoggedIn, function(req, r
   console.log(req.user.user_id);
   var id = (req.params.experiment_id).replace(/[^0-9]/g, ''); ;
   console.log("experiment_id: " + id);
-  funct.updateExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet, id);
+  console.log("link: "+req.body.share_link);
+  funct.updateExperiment(req.body.name, req.body.description, req.body.PrivateOnOffSwitch, req.body.survaypage, req.body.Categories, req.body.PriceOnOffSwitch, req.body.points, req.user.user_id, req.body.BidOnOffSwitch, req.body.MinPriceOnOffSwitch, req.body.wallet, id, req.body.share_link, req.body.share_token);
   res.writeHead(301,
     {Location: '/Experiments'}
   );
@@ -706,66 +728,38 @@ app.get('/sign_s3', isLoggedIn, function(req, res){
 });
 
 //Running Experiment!!!!!
-app.get('/experimentWelcomePage:id', function(req, res){
-  var id = (req.params.id).replace(/[^0-9]/g, ''); ;
-  console.log("experiment_id: " + id);
- res.render('RunningExperiment/experimentWelcomePage', {layout: false, experimentId:id});
+app.get('/experimentWelcomePage', function(req, res){
+  var urlPart = url.parse(req.url, true);
+  var query = urlPart.query;
+  //var id = (req.params.id).replace(/[^0-9]/g, ''); ;
+  console.log("experiment_id: " + query.exp_id + ", iteration_id " + query.iteration_id);
+ res.render('RunningExperiment/experimentWelcomePage', {layout: false, experimentId:query.exp_id, iteration_id: query.iteration_id});
 });
 
-//Running Experiment!!!!!
-app.post('/SubmitToExperiment:experimentId', function(req, res){
+//Submit and start Experiment!!!!!
+app.post('/SubmitToExperiment', function(req, res){
   console.log("Experimenter name: " + req.body.name);
- var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
-         res.writeHead(301,
-            {Location: '/experiment:'+id}
-          );
-          res.end();
+ //var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+ var urlPart = url.parse(req.url, true);
+  var query = urlPart.query;
+  console.log("experiment_id: " + query.exp_id + ", iteration_id " + query.iteration_id);
+
+  res.writeHead(301,
+    {Location: '/experiment?exp_id='+query.exp_id+"&iteration_id="+query.iteration_id+"&name="+req.body.name}
+  );
+ 
+  res.end();
 });
 
-
-
 //Running Experiment!!!!!
-// app.get('/experiment:experimentId', function(req, res){
+app.get('/experiment', function(req, res){
   
-//   var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
-//   console.log("experiment_id: " + id);
-  
-//     funct.getRunningExperiment(id)
-//     .then(function (itemsList) {
-//       if (itemsList) {
-//          console.log("Items length:" + itemsList.length);
-//          //console.log (itemsList);
-//           // var path = "public/experiment"+id+".js";
-//           // var path2 = "/experiment"+id+".js";
-
-//           // fs.writeFile(path, itemsList[0].gizmo_code, function(err) {
-//           //     console.log("Writing file");
-//           //     if(err) {
-//           //         return console.log(err);
-//           //     }
-//           //     console.log("The file was saved!");
-//           // }); 
-
-//         res.render('experiment', {layout: false, details: itemsList, gizmoCodeL: itemsList[0].gizmo_code});
-//         done(null, itemsList);
-//       }
-//       if (!itemsList) {
-//         console.log("COULD NOT FIND");
-//         done(null, itemsList);
-//       }
-//     })
-//     .fail(function (err){
-//       console.log("**** Error: " + err.body);
-//     });
-// });
-
-//Running Experiment!!!!!
-app.get('/experiment:experimentId', function(req, res){
-  
-  var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
-  console.log("experiment_id: " + id);
-  
-    funct.getRunningExperiment(id)
+  //var id = (req.params.experimentId).replace(/[^0-9]/g, ''); ;
+  var urlPart = url.parse(req.url, true);
+  var query = urlPart.query;
+   console.log("experiment_id: " + query.exp_id + ", iteration_id " + query.iteration_id);
+  console.log("Experimenter name: " + query.name);
+    funct.getRunningExperiment(query.exp_id)
     .then(function (itemsList) {
       if (itemsList) {
          console.log("Items length:" + itemsList.length);
@@ -779,20 +773,15 @@ app.get('/experiment:experimentId', function(req, res){
           fs.readFile(__dirname +'/views/RunningExperiment/experimentend.handlebars', function (err, data1) {
             if (err) throw err;
             body += data1;
-            // app.locals({
-            //     details: itemsList
-            // });
-
-            //**res.send(body);
-            //res.render(body, {layout: false, details: itemsList, gizmoCodeL: itemsList[0].gizmo_code});
-            var path = "views/public/experiment"+id+".handlebars";
+          
+            var path = "views/public/experiment"+query.exp_id+".handlebars";
             fs.writeFile(path, body, function(err) {
                 console.log("Writing file");
                 if(err) {
                     return console.log(err);
                 }
                 console.log("The file was saved!");
-                res.render("public/experiment"+id, {layout: false, details: itemsList});
+                res.render("public/experiment"+query.exp_id, {layout: false, details: itemsList,experimentId:query.exp_id, iteration_id: query.iteration_id, name:query.name});
             });
 
           });
@@ -808,6 +797,137 @@ app.get('/experiment:experimentId', function(req, res){
     .fail(function (err){
       console.log("**** Error: " + err.body);
     });
+});
+
+//Submitting iteration data
+app.post('/iterationSubmit', function(req, res){
+
+  var details = req.body;
+  
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+
+  funct.iterationDetails(req.body);
+  res.send(req.body);
+  
+});
+
+//Export to Excel
+app.get('/Excel', function(req, res){
+  var urlPart = url.parse(req.url, true);
+  var query = urlPart.query;
+  var iteration_id = query.iterationId;
+
+    var conf={}
+    conf.cols=[
+        {
+            caption:'Iteration ID',
+            type:'string',
+            width:10
+        },
+        {
+            caption:'Grade',
+            type:'number',
+            width:4
+        },
+        {
+            caption:'Balance',
+            type:'number',
+            width:4
+        },
+        {
+            caption:'Name',
+            type:'string',
+            width:50
+        },
+        {
+            caption:'User ID',
+            type:'string',
+            width:10
+        },
+        {
+            caption:'Min Price',
+            type:'number',
+            width:4
+        },
+        {
+            caption:'Expected Price',
+            type:'string',
+            width:10
+        },
+        {
+            caption:'Reveled Price',
+            type:'number',
+            width:4
+        },
+        {
+            caption:'Paid Price',
+            type:'number',
+            width:4
+        },
+        {
+            caption:'Question Title',
+            type:'string',
+            width:50
+        },
+        {
+            caption:'Product Name',
+            type:'string',
+            width:50
+        },
+        {
+            caption:'Answer',
+            type:'string',
+            width:50
+        },
+        {
+            caption:'Rating',
+            type:'string',
+            width:50
+        }];
+
+
+        funct.getIterationsDetails(iteration_id)
+            .then(function (itemsList) {
+              if (itemsList) {
+                  console.log("Items length:" + itemsList.length);
+                  console.log(itemsList[0]);
+                  arr=[];
+                  for(i=0;i<itemsList.length;i++){
+                      iteration_id =itemsList[i].iteration_id;
+                      grade = itemsList[i].grade;
+                      balance = itemsList[i].balance;
+                      name = itemsList[i].name;
+                      userId = itemsList[i].user_id;
+                      min_price = itemsList[i].min_price;
+                      expected_price = itemsList[i].expected_price;
+                      reveled_price = itemsList[i].reveled_price;
+                      paid_price = itemsList[i].paid_price;
+                      question_title = itemsList[i].question_title;
+                      product_name = itemsList[i].product_name;
+                      answer = itemsList[i].answer;
+                      rating = itemsList[i].rating;
+
+                      a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, expected_price, paid_price, reveled_price, rating ];
+                      arr.push(a);
+                  }
+
+                  console.log(arr);
+
+                  conf.rows=arr;
+                  var result = nodeExcel.execute(conf);
+                  res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+                  res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
+                  res.end(result, 'binary');
+                 done(null,itemsList);
+              }
+              if (!itemsList) {
+                 console.log("COULD NOT FIND");
+                done(null, itemsList);
+              }
+            })
+            .fail(function (err){
+              console.log("**** Error: " + err.body);
+             });
 });
 
 
