@@ -901,7 +901,7 @@ app.get('/Excel', function(req, res){
                       name = itemsList[i].name;
                       userId = itemsList[i].user_id;
                       min_price = itemsList[i].min_price;
-                      expected_price = (itemsList[i].expected_price).replace("\"", "");
+                      expected_price = (itemsList[i].expected_price).replace(/['"]+/g, '');
                       reveled_price = itemsList[i].reveled_price;
                       paid_price = itemsList[i].paid_price;
                       question_title = (itemsList[i].question_title).substring(1, (itemsList[i].question_title).length-1);
