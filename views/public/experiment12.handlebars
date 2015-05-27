@@ -252,7 +252,26 @@ var question = {
                 var title;
                 if (questionNum == 1) title = document.getElementsByClassName("sg-question-title")[0].innerText;
                 if(questionNum > 1) title = document.getElementsByClassName("sg-question-title")[1].innerText;
+
+                // if (questionNum == 1) title = document.getElementsByClassName("sg-question-title")[0].childNodes[2];
+                // if(questionNum > 1) title = document.getElementsByClassName("sg-question-title")[1].childNodes[2];
+                 console.log(title);
+                // title = title.substring(3, title.length);
+                // console.log(title);
+                // console.log("length: " + questionNum.length);
+
+                if(questionNum.length == 1)
+                {
+                  title = title.substring(3, title.length);
+                }
+
+                if(questionNum.length == 2)
+                {
+                  title = title.substring(4, title.length);
+                }
+
                 console.log(title);
+
                 question["title"] = title;
                 sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
                 console.log(sessionStorage.getItem("question"+questionNum));
@@ -296,6 +315,10 @@ var question = {
 
 
           }
+
+          // $('input:radio').on('change', function(){
+          //     question["answer"] = 
+          // });
 
           showProducts();
         };
