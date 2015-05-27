@@ -901,7 +901,7 @@ app.get('/Excel', function(req, res){
                       name = itemsList[i].name;
                       userId = itemsList[i].user_id;
                       min_price = itemsList[i].min_price;
-                      expected_price = (itemsList[i].expected_price).substring(1, (itemsList[i].expected_price).length-1);
+                      expected_price = (itemsList[i].expected_price).replace("\"", "");
                       reveled_price = itemsList[i].reveled_price;
                       paid_price = itemsList[i].paid_price;
                       question_title = (itemsList[i].question_title).substring(1, (itemsList[i].question_title).length-1);
@@ -912,8 +912,8 @@ app.get('/Excel', function(req, res){
                       a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, expected_price, paid_price, reveled_price, rating ];
                       arr.push(a);
                   }
-
                   
+// .replace(/[^0-9]/g, '')
 
                   conf.rows=arr;
                   console.log(conf.rows);
