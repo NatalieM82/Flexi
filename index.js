@@ -901,13 +901,13 @@ app.get('/Excel', function(req, res){
                       name = itemsList[i].name;
                       userId = itemsList[i].user_id;
                       min_price = itemsList[i].min_price;
-                      expected_price = itemsList[i].expected_price;
+                      expected_price = (itemsList[i].expected_price).substring(1, title.length-1);
                       reveled_price = itemsList[i].reveled_price;
                       paid_price = itemsList[i].paid_price;
-                      question_title = itemsList[i].question_title;
-                      product_name = itemsList[i].product_name;
-                      answer = itemsList[i].answer;
-                      rating = itemsList[i].rating;
+                      question_title = (itemsList[i].question_title).substring(1, title.length-1);
+                      product_name = (itemsList[i].product_name).substring(1, title.length-1);
+                      answer = (itemsList[i].answer).substring(1, title.length-1);
+                      rating = (itemsList[i].rating).substring(1, title.length-1);
 
                       a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, expected_price, paid_price, reveled_price, rating ];
                       arr.push(a);
