@@ -101,8 +101,8 @@ var questionNum;
 var question = {
   user_id:"",
   min_price:"",
-  expected_price:[],
-  reveled_price:"",
+  subjective_price:[],
+  revealed_price:"",
   paid_price:"",
   product_name:"",
   title:"",
@@ -324,7 +324,7 @@ var question = {
 
                       question["min_price"] = value;
                       question["product_name"] = productName;
-                      question["expected_price"] = value;
+                      question["subjective_price"] = value;
                       question["paid_price"] = value;
                       sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
                     }
@@ -398,7 +398,7 @@ var question = {
                 console.log(sessionStorage.getItem("product"+productId));
 
                 question["min_price"] = value;
-                question["expected_price"] = price;
+                question["subjective_price"] = price;
                 question["paid_price"] = price;
                 question["product_name"] = productName;
                 sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
@@ -438,7 +438,7 @@ var question = {
                       done = true;
 
                       question["min_price"] = value;
-                      question["expected_price"].push(price);
+                      question["subjective_price"].push(price);
                       question["paid_price"] = value;
                       question["product_name"] = productName;
                       sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
@@ -450,7 +450,7 @@ var question = {
                   else {
                     count--;
                     alert("Your price is too low");
-                    question["expected_price"].push(price);
+                    question["subjective_price"].push(price);
                     
                     //useMinPriceOn(path, value);
                   }
@@ -493,7 +493,7 @@ var question = {
                       done = true;
 
                       question["min_price"] = value;
-                      question["expected_price"].push(price);
+                      question["subjective_price"].push(price);
                       question["paid_price"] = value;
                       question["product_name"] = productName;
                       sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
@@ -505,7 +505,7 @@ var question = {
                   else {
                     count--;
                     alert("Your price is too low");
-                    question["expected_price"].push(price);
+                    question["subjective_price"].push(price);
                     //useMinPriceOn(path, value);
                   }
               }
@@ -530,7 +530,7 @@ var question = {
             var rate = document.getElementById("rate"+i).value;
             var questionTemp = JSON.parse(sessionStorage.getItem("question"+i));
 
-            questionTemp["reveled_price"] = tip;
+            questionTemp["revealed_price"] = tip;
             questionTemp["rating"] = rate;
             sessionStorage.setItem("question"+i, JSON.stringify(questionTemp));
           }
@@ -547,7 +547,7 @@ var question = {
           data.numOfquestions = sessionStorage.getItem("questionNumber");
           data.grade = sessionStorage.getItem("score");
           data.balance = sessionStorage.getItem("wallet");
-          data.question_array = questionsArray
+          data.question_array = questionsArray;
 
           var request = $.ajax({
             url: "/iterationSubmit",

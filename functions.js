@@ -796,7 +796,7 @@ exports.getIterations = function (experiment_id) {
 //INSERT INTO `flexiprice`.`users` (`iteration_id`, `grade`, `balance`, `name`) VALUES ('353454', '434', '23', '534543');
 exports.iterationDetails = function (details) {
   console.log("==== Adding Iteration Details ====");
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
 
   var tempUserId = randomString();
 
@@ -863,10 +863,10 @@ exports.iterationDetails = function (details) {
   exports.updateIteration(details.iteration);
 }
 
-//INSERT INTO `flexiprice`.`questions` (`user_id`, `min_price`, `expected_price`, `reveled_price`, `paid_price`, `question_title`, `product_name`, `answer`, `rating`) VALUES ('rerwer', '21', '12', '32', '12', 'fggdgdg', 'refgfdg', 'gfgd', 'gfdgd');
+//INSERT INTO `flexiprice`.`questions` (`user_id`, `min_price`, `subjective_price`, `revealed_price`, `paid_price`, `question_title`, `product_name`, `answer`, `rating`) VALUES ('rerwer', '21', '12', '32', '12', 'fggdgdg', 'refgfdg', 'gfgd', 'gfdgd');
 exports.iterationDetailsQuestions = function (details, userId) {
   console.log("==== Adding Iteration Questions Details to user: "+ userId +" ====");
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
 
 
 
@@ -875,8 +875,8 @@ exports.iterationDetailsQuestions = function (details, userId) {
       var post = {
         user_id: userId,
         min_price: details["question_array["+i+"][min_price]"],
-        expected_price: JSON.stringify(details["question_array["+i+"][expected_price][]"]),
-        reveled_price: details["question_array["+i+"][reveled_price]"],
+        subjective_price: JSON.stringify(details["question_array["+i+"][subjective_price][]"]),
+        revealed_price: details["question_array["+i+"][revealed_price]"],
         paid_price: details["question_array["+i+"][paid_price]"],
         question_title: JSON.stringify(details["question_array["+i+"][title]"]),
         product_name: JSON.stringify(details["question_array["+i+"][product_name]"]),

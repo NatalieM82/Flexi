@@ -804,7 +804,7 @@ app.post('/iterationSubmit', function(req, res){
 
   var details = req.body;
   
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][expected_price][]"]);
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
 
   funct.iterationDetails(req.body);
   res.send(req.body);
@@ -812,13 +812,134 @@ app.post('/iterationSubmit', function(req, res){
 });
 
 //Export to Excel
-app.get('/Excel', function(req, res){
+// app.get('/Excel', function(req, res){
+//   var urlPart = url.parse(req.url, true);
+//   var query = urlPart.query;
+//   var iteration_id = query.iterationId;
+
+// //iteration_id,userId, name, grade, balance, question_title, 
+// //answer, product_name, min_price, subjective_price, paid_price, reveled_price, rating 
+//     var conf={}
+//     conf.cols=[
+//         {
+//             caption:'Iteration ID',
+//             type:'string',
+//             width:10
+//         },
+//         {
+//             caption:'User ID',
+//             type:'string',
+//             width:10
+//         },
+//                 {
+//             caption:'Name',
+//             type:'string',
+//             width:50
+//         },
+//         {
+//             caption:'Grade',
+//             type:'number',
+//             width:4
+//         },
+//         {
+//             caption:'Balance',
+//             type:'number',
+//             width:4
+//         },
+//         {
+//             caption:'Question Title',
+//             type:'string',
+//             width:50
+//         },
+//         {
+//             caption:'Answer',
+//             type:'string',
+//             width:50
+//         },
+//         {
+//             caption:'Product Name',
+//             type:'string',
+//             width:50
+//         },       
+//         {
+//             caption:'Min Price',
+//             type:'number',
+//             width:4
+//         },
+//         {
+//             caption:'Subjective Price',
+//             type:'string',
+//             width:10
+//         },
+//         {
+//             caption:'Paid Price',
+//             type:'number',
+//             width:4
+//         },
+//         {
+//             caption:'Revealed Price',
+//             type:'number',
+//             width:4
+//         },
+//         {
+//             caption:'Rating',
+//             type:'string',
+//             width:50
+//         }];
+
+
+//         funct.getIterationsDetails(iteration_id)
+//             .then(function (itemsList) {
+//               if (itemsList) {
+//                   console.log("Items length:" + itemsList.length);
+//                   //console.log(itemsList[0]);
+//                   arr=[];
+//                   for(i=0;i<itemsList.length;i++){
+//                       iteration_id =itemsList[i].iteration_id;
+//                       grade = itemsList[i].grade;
+//                       balance = itemsList[i].balance;
+//                       name = itemsList[i].name;
+//                       userId = itemsList[i].user_id;
+//                       min_price = itemsList[i].min_price;
+//                       subjective_price = (itemsList[i].subjective_price).replace(/['"]+/g, '');
+//                       revealed_price = itemsList[i].revealed_price;
+//                       paid_price = itemsList[i].paid_price;
+//                       question_title = (itemsList[i].question_title).substring(1, (itemsList[i].question_title).length-1);
+//                       product_name = (itemsList[i].product_name).substring(1, (itemsList[i].product_name).length-1);
+//                       answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
+//                       rating = (itemsList[i].rating).substring(1, (itemsList[i].rating).length-1);
+
+//                       a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, subjective_price, paid_price, reveled_price, rating ];
+//                       arr.push(a);
+//                   }
+                  
+// // .replace(/[^0-9]/g, '')
+
+//                   conf.rows=arr;
+//                   console.log(conf.rows);
+//                   var result = nodeExcel.execute(conf);
+//                   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+//                   res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
+//                   res.end(result, 'binary');
+//                  done(null,itemsList);
+//               }
+//               if (!itemsList) {
+//                  console.log("COULD NOT FIND");
+//                 done(null, itemsList);
+//               }
+//             })
+//             .fail(function (err){
+//               console.log("**** Error: " + err.body);
+//              });
+// });
+
+app.get('/Excel', isLoggedIn, function(req, res){
   var urlPart = url.parse(req.url, true);
   var query = urlPart.query;
   var iteration_id = query.iterationId;
-
+  var tries = 3;
 //iteration_id,userId, name, grade, balance, question_title, 
-//answer, product_name, min_price, expected_price, paid_price, reveled_price, rating 
+//answer, product_name, min_price, subjective_price, paid_price, reveled_price, rating 
     var conf={}
     conf.cols=[
         {
@@ -867,7 +988,7 @@ app.get('/Excel', function(req, res){
             width:4
         },
         {
-            caption:'Expected Price',
+            caption:'Subjective Price',
             type:'string',
             width:10
         },
@@ -877,7 +998,7 @@ app.get('/Excel', function(req, res){
             width:4
         },
         {
-            caption:'Reveled Price',
+            caption:'Revealed Price',
             type:'number',
             width:4
         },
@@ -887,6 +1008,13 @@ app.get('/Excel', function(req, res){
             width:50
         }];
 
+        for(var i=0 ; i<tries ; i++){
+         conf.cols.push( {
+            caption:'Subjective Price',
+            type:'number',
+            width:10
+          });
+        }
 
         funct.getIterationsDetails(iteration_id)
             .then(function (itemsList) {
@@ -901,20 +1029,26 @@ app.get('/Excel', function(req, res){
                       name = itemsList[i].name;
                       userId = itemsList[i].user_id;
                       min_price = itemsList[i].min_price;
-                      expected_price = (itemsList[i].expected_price).replace(/['"]+/g, '');
-                      reveled_price = itemsList[i].reveled_price;
+                      subjective_price = (itemsList[i].subjective_price).replace(/['"]+/g, '');
+                      revealed_price = itemsList[i].revealed_price;
                       paid_price = itemsList[i].paid_price;
                       question_title = (itemsList[i].question_title).substring(1, (itemsList[i].question_title).length-1);
                       product_name = (itemsList[i].product_name).substring(1, (itemsList[i].product_name).length-1);
                       answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
                       rating = (itemsList[i].rating).substring(1, (itemsList[i].rating).length-1);
 
-                      a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, expected_price, paid_price, reveled_price, rating ];
+
+                      subjective_price = subjective_price.substring(1, (subjective_price).length-1);
+                      subjectiveArray = subjective_price.split(',');
+                      a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, paid_price, revealed_price, rating ];
+                      
+                      for(var j=0 ; j<subjectiveArray.length ; j++){
+                        a.push(subjectiveArray[j]);
+                      }
+                      
                       arr.push(a);
                   }
                   
-// .replace(/[^0-9]/g, '')
-
                   conf.rows=arr;
                   console.log(conf.rows);
                   var result = nodeExcel.execute(conf);
