@@ -431,7 +431,7 @@ app.get('/ModifyExperiment:id' , isLoggedIn, function(req, res){
               funct.getIterations(id)
               .then(function (iterations) {
                 if (iterations) {
-                   res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList, categories:categoriesList, iterations:iterations});
+                   res.render('Experiments/modifyExperiment', {user: req.user, items: itemsList, categories:categoriesList, iterations:iterations, tries: itemsList[0].max_tries});
                    done(null, itemsList, categoriesList, iterations);
                 }
                 if (!iterations) {
@@ -937,7 +937,7 @@ app.get('/Excel', isLoggedIn, function(req, res){
   var urlPart = url.parse(req.url, true);
   var query = urlPart.query;
   var iteration_id = query.iterationId;
-  var tries = 3;
+  var tries = query.tries;
 //iteration_id,userId, name, grade, balance, question_title, 
 //answer, product_name, min_price, subjective_price, paid_price, reveled_price, rating 
     var conf={}
