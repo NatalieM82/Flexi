@@ -1034,11 +1034,12 @@ app.get('/Excel', isLoggedIn, function(req, res){
                       answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
                       rating = (itemsList[i].rating).substring(1, (itemsList[i].rating).length-1);
 
-
-                      subjective_price = subjective_price.substring(1, (subjective_price).length-1);
-                      subjectiveArray = subjective_price.split(',');
                       a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, paid_price, revealed_price, rating ];
                       
+
+                      //subjective_price = subjective_price.substring(1, (subjective_price).length-1);
+                      subjectiveArray = subjective_price.split(',');
+
                       for(var j=0 ; j<tries ; j++){
                         console.log(subjectiveArray[j]);
                         if (subjectiveArray[j] != null)
