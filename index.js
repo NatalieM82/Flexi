@@ -1043,7 +1043,7 @@ app.get('/Excel', isLoggedIn, function(req, res){
                       for(var j=0 ; j<tries ; j++){
                         console.log(subjectiveArray[j]);
                         if (subjectiveArray[j] != null)
-                          a.push(subjectiveArray[j]);
+                          a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
                         else a.push(0);
                       }
                       
