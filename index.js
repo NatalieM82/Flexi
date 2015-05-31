@@ -1012,7 +1012,7 @@ app.get('/Excel', isLoggedIn, function(req, res){
             .then(function (itemsList) {
               if (itemsList) {
                   console.log("Items length:" + itemsList.length);
-                  //console.log(itemsList[0]);
+
                   arr=[];
                   for(i=0;i<itemsList.length;i++){
                       iteration_id =itemsList[i].iteration_id;
@@ -1031,9 +1031,6 @@ app.get('/Excel', isLoggedIn, function(req, res){
 
                       a=[iteration_id,userId, name, grade, balance, question_title, product_name, min_price, paid_price, revealed_price, rating];
                       
-                      //subjective_price = subjective_price.substring(1, (subjective_price).length-1);
-                      
-                      //console.log("Subjective: " + subjective_price);
                       
                       var subjectiveArray = subjective_price.split(',');
 
@@ -1043,7 +1040,6 @@ app.get('/Excel', isLoggedIn, function(req, res){
                           a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
                         else a.push(0);
                       }
-                      //console.log(a);
                       arr.push(a);
                   }
                   

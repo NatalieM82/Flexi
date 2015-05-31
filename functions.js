@@ -835,7 +835,17 @@ exports.iterationDetails = function (details) {
             if (err != null) {
               console.log(err);
             }
-            if (err == null) {                           
+            if (err == null) {      
+
+                connection.query('DELETE FROM flexiprice.questionToProduct WHERE userID = ?', tempUserId1, function (err, result) {
+                  if (err != null) {
+                    console.log(err);
+                  }
+                  if (err == null) {             
+                      
+                  }
+                     
+                });                       
               exports.iterationDetailsQuestions(details, tempUserId1);
             }
                 connection.end();
