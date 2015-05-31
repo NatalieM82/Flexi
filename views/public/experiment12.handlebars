@@ -327,6 +327,7 @@ var question = {
             console.log("You already bought the item");
             window.open(path, '_blank');
             question["products"].push(temp);
+            question["numOfProducts"]++;
             sessionStorage.setItem("question"+questionNum, JSON.stringify(question));
             console.log(sessionStorage.getItem("question"+questionNum));
             return;
@@ -576,9 +577,12 @@ var question = {
 
           //Getting Tip and rating
           for(var i=1;i<=JSON.parse(sessionStorage.getItem("questionNumber"));i++){
+
             var questionTemp = JSON.parse(sessionStorage.getItem("question"+i));
             var products = questionTemp["products"];
+            
             for(var j=0; j<products.length; j++){
+
               var num = j+1;
               var tip = document.getElementById("tip"+i+num).value;
               var rate = document.getElementById("rate"+i+num).value;

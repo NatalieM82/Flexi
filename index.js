@@ -1006,7 +1006,7 @@ app.get('/Excel', isLoggedIn, function(req, res){
           });
         }
 
-        console.log(conf.cols);
+        //console.log(conf.cols);
 
         funct.getIterationsDetails(iteration_id)
             .then(function (itemsList) {
@@ -1031,21 +1031,24 @@ app.get('/Excel', isLoggedIn, function(req, res){
 
                       a=[iteration_id,userId, name, grade, balance, question_title, product_name, min_price, paid_price, revealed_price, rating];
                       
-                      subjective_price = subjective_price.substring(1, (subjective_price).length-1);
+                      //subjective_price = subjective_price.substring(1, (subjective_price).length-1);
+                      
+                      //console.log("Subjective: " + subjective_price);
+                      
                       var subjectiveArray = subjective_price.split(',');
 
                       for(var j=0 ; j<tries ; j++){
-                        console.log(subjectiveArray[j]);
+                        console.log("Subjective: " + subjectiveArray[j]);
                         if (subjectiveArray[j] != null)
                           a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
                         else a.push(0);
                       }
-                      console.log(a);
+                      //console.log(a);
                       arr.push(a);
                   }
                   
                   conf.rows=arr;
-                  console.log(conf.rows);
+                  //console.log(conf.rows);
                   var result = nodeExcel.execute(conf);
                   res.setHeader('Content-Type', 'application/vnd.openxmlformats');
                   res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
