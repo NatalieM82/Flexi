@@ -999,7 +999,7 @@ app.get('/Excel', isLoggedIn, function(req, res){
         },
         {
             caption:'Subjective Price',
-            type:'number',
+            type:'string',
             width:20
           }];
 
