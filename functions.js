@@ -796,10 +796,12 @@ exports.getIterations = function (experiment_id) {
 //INSERT INTO `flexiprice`.`users` (`iteration_id`, `grade`, `balance`, `name`) VALUES ('353454', '434', '23', '534543');
 exports.iterationDetails = function (details) {
   console.log("==== Adding Iteration Details ====");
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+ details["question_array[0][products][0][min_price]"]);
 
-  var tempUserId = randomString();
+  var tempUserId = Math.floor(Math.random() * 10000);
+  console.log(tempUserId);
 
+  //Insert New User
   var postNew = {
     iteration_id: details.iteration,
     grade: details.grade,
@@ -808,6 +810,7 @@ exports.iterationDetails = function (details) {
     user_id: tempUserId
   }
 
+  //Update User
   var postUpdate = {
     iteration_id: details.iteration,
     grade: details.grade,
@@ -815,7 +818,7 @@ exports.iterationDetails = function (details) {
   }
 
   pool.getConnection(function (err, connection){
-    connection.query('SELECT * FROM flexiprice.users where name = \"' + details.name + '\";' ,function(err, rows, fields) {
+    connection.query('SELECT * FROM flexiprice.users where name = \"' + details.name + '\" and iteration_id='+details.iteration+';' ,function(err, rows, fields) {
       if (err!= null) {
         console.log("Error finding user" + err);
       }
@@ -847,7 +850,7 @@ exports.iterationDetails = function (details) {
             }
             if (err == null) {                           
                 exports.iterationDetailsQuestions(details, tempUserId);
-
+                exports.updateIteration(details.iteration);
             }
                 connection.end();
           });
@@ -860,46 +863,78 @@ exports.iterationDetails = function (details) {
     
   });
 
-  exports.updateIteration(details.iteration);
+  
 }
 
-//INSERT INTO `flexiprice`.`questions` (`user_id`, `min_price`, `subjective_price`, `revealed_price`, `paid_price`, `question_title`, `product_name`, `answer`, `rating`) VALUES ('rerwer', '21', '12', '32', '12', 'fggdgdg', 'refgfdg', 'gfgd', 'gfdgd');
+//Insert Questions
+//INSERT INTO `flexiprice`.`questions` (`question_title`) VALUES ('Something');
+//Insert QuestionToProduct
+//INSERT INTO `flexiprice`.`questionToProduct` (`userID`, `questionID`, `productID`, `min_price`, `subjecitve_price`, `revealed_price`, `paid_price`, `rating`) VALUES ('43', '3423', '432', '453', '554534', '543534', '5434', 'Something');
 exports.iterationDetailsQuestions = function (details, userId) {
   console.log("==== Adding Iteration Questions Details to user: "+ userId +" ====");
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
+  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][products][0][min_price]"] +" "+ details["question_array[0][products][0][subjective_price][]"]);
 
-
-
-  pool.getConnection(function (err, connection){
+var questions = [];
+pool.getConnection(function (err, connection){
     for (var i=0 ; i<details.numOfquestions ; i++){
-      var post = {
-        user_id: userId,
-        min_price: details["question_array["+i+"][min_price]"],
-        subjective_price: JSON.stringify(details["question_array["+i+"][subjective_price][]"]),
-        revealed_price: details["question_array["+i+"][revealed_price]"],
-        paid_price: details["question_array["+i+"][paid_price]"],
-        question_title: JSON.stringify(details["question_array["+i+"][title]"]),
-        product_name: JSON.stringify(details["question_array["+i+"][product_name]"]),
-        answer: JSON.stringify(details["question_array["+i+"][answer]"]),
-        rating: JSON.stringify(details["question_array["+i+"][rating]"])
-       }
-
-      connection.query('INSERT INTO flexiprice.questions SET ?', post, function (err, result) {
+      var postQuestion = {
+        question_title: JSON.stringify(details["question_array["+i+"][title]"]).replace(/['"]+/g, ''),
+      }
+      connection.query('INSERT INTO flexiprice.questions SET ?', postQuestion, function (err, result) {
         if (err != null) {
           console.log(err);
         }
         if (err == null) {                           
-
+          questionID = result.insertId;
+          console.log("QuestionID: " + questionID + " " + i);
+          console.log("User: " + userId + " Question: "+ questionID + " Index: "+i)
+          questions.push(questionID);
+          if (questions.length == details.numOfquestions) exports.questionToProduct(details, userId, questions);
         }
             
       });
-    }
+      console.log(questions.length);
+    
+  }
+    connection.end();
 
-        connection.end();
+
   });
 
-    
+  
+}
 
+exports.questionToProduct = function(details, userID, questions)
+{
+  console.log("User: " + userID + " Questions: "+ questions)
+
+  pool.getConnection(function (err, connection){
+    for (var i=0 ; i<details.numOfquestions ; i++){
+
+      for (var j=0; j<details["question_array["+i+"][numOfProducts]"] ; j++) {
+        var postProduct = {
+          userID: userID,
+          questionID: questions[i],
+          productID: details["question_array["+i+"][products]["+j+"][product_id]"],
+          min_price: details["question_array["+i+"][products]["+j+"][min_price]"],
+          subjecitve_price: JSON.stringify(details["question_array["+i+"][products]["+j+"][subjective_price][]"]).replace(/['"]+/g, ''), 
+          revealed_price: details["question_array["+i+"][products]["+j+"][revealed_price]"],
+          paid_price: details["question_array["+i+"][products]["+j+"][paid_price]"], 
+          rating: JSON.stringify(details["question_array["+i+"][products]["+j+"][rating]"]).replace(/['"]+/g, '')
+        }
+
+        connection.query('INSERT INTO flexiprice.questionToProduct SET ?', postProduct, function (err, result) {
+          if (err != null) {
+            console.log(err);
+          }
+          if (err == null) { 
+            console.log("Question #" + i + " with details " + j);
+          }
+        });     
+      }
+    }
+    connection.end();
+  });
 }
 
 //UPDATE `flexiprice`.`iterations` SET `date`='32', `subjects`='43' WHERE `iteration_id`='5s2cF52G' and`experiment_id`='12' and`link`='http://localhost:5000/experimentWelcomePage?exp_id=12&iteration_id=5s2cF52G';
@@ -939,7 +974,9 @@ exports.getIterationsDetails = function (iterationId) {
   var deferred = Q.defer();
  
    pool.getConnection(function (err, connection) {
-   var sql = 'SELECT * FROM flexiprice.users INNER JOIN questions ON users.user_id = questions.user_id And users.iteration_id=?;'
+   var sql = 'SELECT * FROM flexiprice.users as users INNER JOIN questionToProduct as questionToProduct ON users.user_id=questionToProduct.userID ';
+    sql += 'INNER JOIN questions as questions ON questionToProduct.questionID =questions.question_id ';
+    sql += 'INNER JOIN (select products.name as product_name, products.product_id from products) products ON questionToProduct.productID=products.product_id where users.iteration_id =?;';
      connection.query(sql, iterationId , function (err, rows) {
     if (err!= null) {
       console.log("Error finding running experiment" + err);

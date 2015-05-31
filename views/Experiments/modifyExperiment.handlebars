@@ -18,7 +18,7 @@ function goSimulations() {
 
 function createLink(){
 	var link = "http://localhost:5000/experimentWelcomePage?exp_id="+{{experiment_id}}+"&iteration_id=";
-	var token = randomString();
+	var token = Math.floor(Math.random() * 10000);
 	link += token;
 	console.log(link);
 	document.getElementById("shareLink").style.width = "100%";

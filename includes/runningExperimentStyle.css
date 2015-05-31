@@ -127,3 +127,15 @@ body { height: 100%;
 	text-align: center;
 }
 
+.product {
+	height: 128px;
+	width:128px;
+	background-color: #031f38;
+	color: #ffffff;
+	display: inline-block;
+	float: left;
+	margin-right: 15px;
+	margin-top: 15px;
+	font-size: 14px;
+}
+

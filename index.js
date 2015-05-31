@@ -803,8 +803,8 @@ app.get('/experiment', function(req, res){
 app.post('/iterationSubmit', function(req, res){
 
   var details = req.body;
-  
-  console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+details["question_array[0][min_price]"] +" "+ details["question_array[1][subjective_price][]"]);
+  console.log(details);
+  //console.log("Number of questions: " + details.numOfquestions+" "+ details.grade +" "+ details["question_array[0][products][0][min_price]"]);
 
   funct.iterationDetails(req.body);
   res.send(req.body);
@@ -973,11 +973,6 @@ app.get('/Excel', isLoggedIn, function(req, res){
             width:50
         },
         {
-            caption:'Answer',
-            type:'string',
-            width:50
-        },
-        {
             caption:'Product Name',
             type:'string',
             width:50
@@ -1001,17 +996,22 @@ app.get('/Excel', isLoggedIn, function(req, res){
             caption:'Rating',
             type:'string',
             width:50
-        }];
-
-        for(var i=0 ; i<tries ; i++){
-         conf.cols.push( {
+        },
+        {
             caption:'Subjective Price',
             type:'number',
-            width:10
-          });
-        }
+            width:20
+          }];
 
-        console.log(conf.cols);
+        // for(var i=0 ; i<tries ; i++){
+        //  conf.cols.push( {
+        //     caption:'Subjective Price',
+        //     type:'number',
+        //     width:10
+        //   });
+        // }
+
+        //console.log(conf.cols);
 
         funct.getIterationsDetails(iteration_id)
             .then(function (itemsList) {
@@ -1026,27 +1026,27 @@ app.get('/Excel', isLoggedIn, function(req, res){
                       name = itemsList[i].name;
                       userId = itemsList[i].user_id;
                       min_price = itemsList[i].min_price;
-                      subjective_price = (itemsList[i].subjective_price).replace(/['"]+/g, '');
+                      subjective_price = itemsList[i].subjective_price;
                       revealed_price = itemsList[i].revealed_price;
                       paid_price = itemsList[i].paid_price;
-                      question_title = (itemsList[i].question_title).substring(1, (itemsList[i].question_title).length-1);
-                      product_name = (itemsList[i].product_name).substring(1, (itemsList[i].product_name).length-1);
-                      answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
-                      rating = (itemsList[i].rating).substring(1, (itemsList[i].rating).length-1);
+                      question_title = itemsList[i].question_title;
+                      product_name = itemsList[i].product_name;
+                      //answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
+                      rating = itemsList[i].rating;
 
-                      a=[iteration_id,userId, name, grade, balance, question_title, answer, product_name, min_price, paid_price, revealed_price, rating ];
+                      a=[iteration_id,userId, name, grade, balance, question_title, product_name, min_price, paid_price, revealed_price, rating,subjective_price ];
                       
-
+console.log(a);
                       //subjective_price = subjective_price.substring(1, (subjective_price).length-1);
-                      subjectiveArray = subjective_price.split(',');
+                      // var subjectiveArray = subjective_price.split(',');
 
-                      for(var j=0 ; j<tries ; j++){
-                        console.log(subjectiveArray[j]);
-                        if (subjectiveArray[j] != null)
-                          a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
-                        else a.push(0);
-                      }
-                      
+                      // for(var j=0 ; j<tries ; j++){
+                      //   console.log(subjectiveArray[j]);
+                      //   if (subjectiveArray[j] != null)
+                      //     a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
+                      //   else a.push(0);
+                      // }
+                      console.log(a);
                       arr.push(a);
                   }
                   
