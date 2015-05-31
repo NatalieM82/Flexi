@@ -917,7 +917,7 @@ exports.questionToProduct = function(details, userID, questions)
           questionID: questions[i],
           productID: details["question_array["+i+"][products]["+j+"][product_id]"],
           min_price: details["question_array["+i+"][products]["+j+"][min_price]"],
-          subjecitve_price: JSON.stringify(details["question_array["+i+"][products]["+j+"][subjective_price][]"]).replace(/['"]+/g, ''), 
+          subjective_price: JSON.stringify(details["question_array["+i+"][products]["+j+"][subjective_price][]"]).replace(/['"]+/g, ''), 
           revealed_price: details["question_array["+i+"][products]["+j+"][revealed_price]"],
           paid_price: details["question_array["+i+"][products]["+j+"][paid_price]"], 
           rating: JSON.stringify(details["question_array["+i+"][products]["+j+"][rating]"]).replace(/['"]+/g, '')

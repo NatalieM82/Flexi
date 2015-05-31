@@ -996,22 +996,17 @@ app.get('/Excel', isLoggedIn, function(req, res){
             caption:'Rating',
             type:'string',
             width:50
-        },
-        {
+        }];
+
+        for(var i=0 ; i<tries ; i++){
+         conf.cols.push( {
             caption:'Subjective Price',
-            type:'string',
-            width:20
-          }];
+            type:'number',
+            width:10
+          });
+        }
 
-        // for(var i=0 ; i<tries ; i++){
-        //  conf.cols.push( {
-        //     caption:'Subjective Price',
-        //     type:'number',
-        //     width:10
-        //   });
-        // }
-
-        //console.log(conf.cols);
+        console.log(conf.cols);
 
         funct.getIterationsDetails(iteration_id)
             .then(function (itemsList) {
@@ -1034,18 +1029,17 @@ app.get('/Excel', isLoggedIn, function(req, res){
                       //answer = (itemsList[i].answer).substring(1, (itemsList[i].answer).length-1);
                       rating = itemsList[i].rating;
 
-                      a=[iteration_id,userId, name, grade, balance, question_title, product_name, min_price, paid_price, revealed_price, rating,subjective_price ];
+                      a=[iteration_id,userId, name, grade, balance, question_title, product_name, min_price, paid_price, revealed_price, rating];
                       
-console.log(a);
-                      //subjective_price = subjective_price.substring(1, (subjective_price).length-1);
-                      // var subjectiveArray = subjective_price.split(',');
+                      subjective_price = subjective_price.substring(1, (subjective_price).length-1);
+                      var subjectiveArray = subjective_price.split(',');
 
-                      // for(var j=0 ; j<tries ; j++){
-                      //   console.log(subjectiveArray[j]);
-                      //   if (subjectiveArray[j] != null)
-                      //     a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
-                      //   else a.push(0);
-                      // }
+                      for(var j=0 ; j<tries ; j++){
+                        console.log(subjectiveArray[j]);
+                        if (subjectiveArray[j] != null)
+                          a.push((subjectiveArray[j]).replace(/[^0-9.]/g, ""));
+                        else a.push(0);
+                      }
                       console.log(a);
                       arr.push(a);
                   }
